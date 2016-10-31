@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "F:\Moolya\GitHub\voxweb-api\main.py", line 73, in <module>
+    current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
+  File "c:\python27\lib\json\__init__.py", line 338, in loads
+    return _default_decoder.decode(s)
+  File "c:\python27\lib\json\decoder.py", line 366, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "c:\python27\lib\json\decoder.py", line 384, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+
+**\detailed_tests\tests_search\P-1-getVerificationCode (Executed: 2015-06-05 15:32:01, 4.137 seconds)**
+All is well!!
+Traceback (most recent call last):
+  File "F:\Moolya\GitHub\voxweb-api\main.py", line 73, in <module>
+    current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
+  File "c:\python27\lib\json\__init__.py", line 338, in loads
+    return _default_decoder.decode(s)
+  File "c:\python27\lib\json\decoder.py", line 366, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "c:\python27\lib\json\decoder.py", line 384, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+
+**\detailed_tests\tests_search\P-2-getAccessToken (Executed: 2015-06-05 15:32:04, 3.283 seconds)**
+All is well!!
+Traceback (most recent call last):
+  File "F:\Moolya\GitHub\voxweb-api\main.py", line 80, in <module>
+    if current_api[each_key][each_subkey] != "":
+TypeError: string indices must be integers, not str
+
+**\detailed_tests\tests_search\3-1-searchUser (Executed: 2015-06-05 15:32:08, 4.314 seconds)**
+All is well!!
+Traceback (most recent call last):
+  File "F:\Moolya\GitHub\voxweb-api\main.py", line 80, in <module>
+    if current_api[each_key][each_subkey] != "":
+TypeError: string indices must be integers, not str
+
+**\detailed_tests\tests_search\3-2-searchUser (Executed: 2015-06-05 15:32:14, 5.571 seconds)**
+19 rows expected, but 20found!
