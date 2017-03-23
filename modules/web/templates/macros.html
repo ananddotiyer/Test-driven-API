@@ -1,0 +1,21 @@
+{% macro weather_cell(value, hl) %}
+    <td{% if hl %} class="warning"{% endif %}>{{ value }}</td>
+{% endmacro %}
+
+{% macro test_row(api_category, api_type, api_base_url) %}
+    <tr>
+        <td>{{ api_category }}</td>
+        <td>{{ api_type }}</td>
+        <td>{{ api_base_url }}</td>
+    </tr>
+{% endmacro %}
+
+{% macro result_row(api_url, api_type, executed_at, time_spent, result) %}
+    <tr>
+        <td>{{ api_url }}</td>
+        <td>{{ api_type }}</td>
+        <td>{{ executed_at }}</td>
+        <td>{{ time_spent }}</td>
+        <td>{{ result }}</td>
+    </tr>
+{% endmacro %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block title %}API Test results for {{ server }}{% endblock %}
+
+{% block page_content %}
+    <h3>{{ server }}</h3>
+    <table class="table table-hover">
+        <tr>
+            <th>Category</th>
+            <th>Method</th>
+            <th>URL</th>
+        </tr>
+        {% for test in tests %}
+            {{ macros.test_row(test["api_category"],
+                                    test["api_type"],
+                                    test["api_base_url"]) }}
+        {% endfor %}
+    </table>
+{% endblock %}
