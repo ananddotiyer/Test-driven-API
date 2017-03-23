@@ -19,4 +19,4 @@ To create a new test folder, follow these steps
 5. Create tests.py in the folder, to hold all tests in a dictionary.  Refer to any of the .py files within functional_tests folder, for a sample.
 6. Add folder-path into the appropriate list in tests_suite.py.  For example, regression.tests
 
-To view web interface, run "python web.py" in command-line, from modules\web path.
+To view web interface, run "python web.py" in command-line, from modules\web path.  Web interface is available at localhost:5000
