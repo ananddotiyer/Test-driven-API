@@ -21,6 +21,7 @@ from verification import *
 from ..tests.tests_suite import *
 from base64 import b64encode
 import json
+import codecs
 
 ################################################user##############################################################
 def getVerificationCode(current_api):
@@ -33,7 +34,7 @@ def getVerificationCode(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -66,7 +67,7 @@ def getAccessToken(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -106,7 +107,7 @@ def getCognitoToken(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -144,7 +145,7 @@ def updateProfile(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -180,7 +181,7 @@ def viewProfile(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -218,7 +219,7 @@ def getNotifications(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -252,7 +253,7 @@ def getLoop (current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -287,7 +288,7 @@ def uploadContacts(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -325,7 +326,7 @@ def getIPContacts(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -362,7 +363,7 @@ def blockContact(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -398,7 +399,7 @@ def unblockContact(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -434,7 +435,7 @@ def followUser(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -470,7 +471,7 @@ def unfollowUser(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -506,7 +507,7 @@ def getFollowers(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -543,7 +544,7 @@ def getFollowing(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -580,7 +581,7 @@ def searchUser(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -618,7 +619,7 @@ def getLifePage (current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -652,7 +653,7 @@ def uploadLifePost(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -689,7 +690,7 @@ def getLifePost (current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -730,7 +731,7 @@ def removeVoiceFromVoxPic(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -766,7 +767,7 @@ def deleteLifePost(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -802,7 +803,7 @@ def uploadLike(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -838,7 +839,7 @@ def deleteLike(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -874,7 +875,7 @@ def getPostLikes(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -912,7 +913,7 @@ def uploadComment(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -949,7 +950,7 @@ def getPostComments(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -985,7 +986,7 @@ def getHashtagPage (current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	
@@ -1020,7 +1021,7 @@ def reportContent(current_api):
 	if output_mode != 'n':
 		if output_mode == 'h':
 			output_mode = 'a'
-		f = open(filename + ".csv",output_mode)
+		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
 	

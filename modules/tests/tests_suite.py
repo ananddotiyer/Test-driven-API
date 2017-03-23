@@ -4,7 +4,7 @@
 """tests_suite.py: This is the test suite configuration."""
 
 __author__ = "Anand Iyer"
-__copyright__ = "Copyright 2014-15, Anand Iyer"
+__copyright__ = "Copyright 2016-17, Anand Iyer"
 __credits__ = ["Anand Iyer"]
 __license__ = "GPL"
 __version__ = "2.0"
@@ -16,7 +16,9 @@ __status__ = "Production"
 global_dict = {
 	"session_id":"", "ipaddress":"127.0.0.1",
 	"server":"https://staging.vxwb.in",
-	"headers": {},
+	"headers": {
+		"Content-Type": "application/json"
+	},
 	"actuals_folder": "modules\\tests\\",
 	"debuglog": "modules\\tests\\",
 	"reslog": "modules\\tests\\"
@@ -40,4 +42,3 @@ tests_suite = [
 	#"detailed_tests.tests_hashtag",
 	#"detailed_tests.tests_reportcontent",
 ]
-

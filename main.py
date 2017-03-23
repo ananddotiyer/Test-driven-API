@@ -4,13 +4,12 @@
 """main.py: This is the controller.  Execution starts from here"""
 
 __author__ = "Anand Iyer"
-__copyright__ = "Copyright 2014-15, Anand Iyer"
-__credits__ = ["Anand Iyer", "Aarthy S", "Gurinder Singh",
-                    "Mrinalini Kaushal"]
+__copyright__ = "Copyright 2016-17, Moolya Software Testing"
+__credits__ = ["Anand Iyer"]
 __license__ = "GPL"
 __version__ = "2.0"
 __maintainer__ = "Anand Iyer"
-__email__ = "ananddotiyer@gmail.com"
+__email__ = "anand.iyer@moolya.com"
 __status__ = "Production"
 #############################################################################################################################################
 
@@ -64,21 +63,21 @@ for tests in tests_suite:
 						if isinstance (current_api[each_key][each_subkey], int):
 							continue
 						
-						#Replace anything between <> from global_dict						
+						#Replace anything between <> from global_dict                       
 						matches = re.findall ("<(.*?)>", current_api[each_key][each_subkey], re.DOTALL)
 						for match in matches:
 							current_api[each_key][each_subkey] = re.sub('<' + match + '>',global_dict[match], current_api[each_key][each_subkey])
 						
-						if current_api[each_key][each_subkey] != "":
-							current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
+						# if current_api[each_key][each_subkey] != "":
+						#   current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
 				else:
-					#Replace anything between <> from global_dict						
+					#Replace anything between <> from global_dict                       
 					matches = re.findall("<(.*?)>", current_api[each_key], re.DOTALL)
 					for match in matches:
 						current_api[each_key] = re.sub('<' + match + '>',global_dict[match], current_api[each_key])
-					
-					if current_api[each_key][each_subkey] != "":
-						current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
+
+					# if current_api[each_key][each_subkey] != "":
+					#   current_api[each_key][each_subkey] = json.loads (current_api[each_key][each_subkey])
 		except:
 			traceback.print_exc (file=global_dict["debuglog"]) #api_store may not be present
 
@@ -115,9 +114,6 @@ for tests in tests_suite:
 			
 			api_url = (api_url + api_params_set)[:-1]
 
-		report_it ("datetime",
-				   subfolder + tests + "\\" + api_name, api_url, api_type)
-	
 		#get the function pointer
 		mod = import_module ("modules.libraries.api_functions")
 		function_to_call = getattr (mod, api_function)
@@ -127,7 +123,7 @@ for tests in tests_suite:
 			#get the server response
 	
 			if api_type == "POST":
-				global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+				#global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
 				req = requests.post (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
 				current_api.data = req.text
 				current_api.status_code = req.status_code
@@ -135,15 +131,20 @@ for tests in tests_suite:
 			actuals_folder = global_dict["actuals_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
 			current_api.actuals_folder = actuals_folder
 			
+			report_it ("datetime",
+				   subfolder + tests + "\\" + api_name, api_url, api_type)
+
 			#Parse the response, and verify the results
 			if not (api_type == "DELETE"):
-				#result = function_to_call (actuals_folder, api_expected, data, output_mode)
-				result = function_to_call (current_api)
+				if function_to_call is not None:
+					result = function_to_call (current_api)
+				else:
+					result = True
 			else:
 				result = True #assume that it passed
 		except Exception: #so, you can continue with the next test
 			traceback.print_exc (file=global_dict["debuglog"])
-		
+
 		report_it (bool (result))
 			
 global_dict["debuglog"].close()

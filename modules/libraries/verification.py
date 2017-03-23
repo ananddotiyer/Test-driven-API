@@ -43,7 +43,6 @@ def VerifyFilter (actual, expected):
     return retValue
 
 def VerifyRowCount (actual_rowCount, exp_rowCount):
-    #if not (exp_rowCount == 0):
     if not (exp_rowCount == actual_rowCount):
         print (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!")
         global_dict["debuglog"].write (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!\n")
