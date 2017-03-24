@@ -15,18 +15,23 @@ __status__ = "Production"
 
 global_dict = {
 	"session_id":"", "ipaddress":"127.0.0.1",
-	"server":"https://staging.vxwb.in",
+	"running": False,
+	# "server":"https://staging.vxwb.in",
+	# "headers": {
+	# },
+	"server":"http://dev.media.jio.com/n18/",
 	"headers": {
-		"Content-Type": "application/json"
+		"appkey":"bjzLHR11aEvXwIk0pF0x",
+		"deviceid": "q1l1fULw5ddj8ysCkDJ8",
+		"usergroup":"q1l1fULw5ddj8ysCkDJ8",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)",
 	},
-	"actuals_folder": "modules\\tests\\",
-	"debuglog": "modules\\tests\\",
-	"reslog": "modules\\tests\\"
 }
 
 run_list = ['POST']
 
 tests_suite = [
+	"detailed_tests.tests_apphomekey",
 	#"detailed_tests.tests_authentication",
 	#"detailed_tests.tests_profile",
 	#"detailed_tests.tests_notifications",
@@ -36,7 +41,7 @@ tests_suite = [
 	#"detailed_tests.tests_lifepost",
 	#"detailed_tests.tests_comment",
 	#"detailed_tests.tests_follow",
-	"detailed_tests.tests_search",
+	#"detailed_tests.tests_search",
 	#"detailed_tests.tests_like",
 	#"detailed_tests.tests_contact",
 	#"detailed_tests.tests_hashtag",

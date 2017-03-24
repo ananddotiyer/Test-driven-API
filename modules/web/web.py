@@ -8,7 +8,9 @@ bootstrap = Bootstrap(app)
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    sys.path.append(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
 
+from main import main_driver
 from tests.tests_suite import *
     
 @app.route('/')
@@ -26,20 +28,29 @@ def index():
         for test in additional_tests:
             test["api_category"] = tests_in_folder[-1]
         
-        print test_list
-        
     return render_template('index.html', server=global_dict["server"], tests=test_list)
 
 @app.route ("/run")
 def run ():
     import csv
-    reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
-    results_list = []
-    for line in reader:
-        results_list.append(line)
+    import os
+    
+    try:
+        if not global_dict["running"]:
+            global_dict["running"] = True #so that you don't run it again!
+            main_driver (True)
+        
+        reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
+        global_dict["running"] = False
 
-    return render_template ('run.html', results=results_list)
-
+        results_list = []
+        for line in reader:
+            results_list.append(line)
+    
+        return render_template ('run.html', results=results_list)
+    except:
+        return render_template ('no_results.html', running=global_dict["running"])
+    
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html')

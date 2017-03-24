@@ -88,7 +88,7 @@ def VerifyExpected (actual, expected, case_sensitive=True):
     return result
 
 def report_start ():
-    global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result\n")
+    #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result\n")
     global_dict["start_time"] = datetime.datetime.now()
     
 def report_it (result, test="", api_url="", api_type=""):
