@@ -43,10 +43,15 @@ def run ():
         reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
         global_dict["running"] = False
 
+        tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
+
         results_list = []
         for line in reader:
             results_list.append(line)
-    
+            #making the path for the exported csv file
+            line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[1].strip ('")\\')
+            line["test_path"] = "file://%s/%s.csv" %(tests_folder,line["test_path"])
+             
         return render_template ('run.html', results=results_list)
     except:
         return render_template ('no_results.html', running=global_dict["running"])
