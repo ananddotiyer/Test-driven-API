@@ -1,5 +1,9 @@
-{% macro weather_cell(value, hl) %}
-    <td{% if hl %} class="warning"{% endif %}>{{ value }}</td>
+{% macro display_link (api_url, is_get) %}
+    <td>
+        {% if is_get %} <a href='{{ api_url }}'>{% endif %}
+            {{ api_url }}
+        {% if is_get %} </a> {% endif %}
+    </td>
 {% endmacro %}
 
 {% macro test_row(api_category, api_type, api_base_url) %}
@@ -10,12 +14,12 @@
     </tr>
 {% endmacro %}
 
-{% macro result_row(api_url, api_type, executed_at, time_spent, result) %}
+{% macro result_row(test_path, api_url, api_type, executed_at, time_spent, result) %}
     <tr>
-        <td>{{ api_url }}</td>
+        {{ display_link (api_url, api_type == "GET") }}
         <td>{{ api_type }}</td>
         <td>{{ executed_at }}</td>
         <td>{{ time_spent }}</td>
-        <td>{{ result }}</td>
+        <td><a href='{{ test_path }}'>{{ result }}</a></td>
     </tr>
 {% endmacro %}

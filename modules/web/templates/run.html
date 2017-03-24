@@ -14,11 +14,12 @@
             <th>Result</th>
         </tr>
         {% for result in results %}
-            {{ macros.result_row(result["api_url"],
-                                  result["api_type"],
-                                  result["executed_at"],
-                                  result["time_spent (sec)"],
-                                  result["result"]) }}
+            {{ macros.result_row(result["test_path"],
+                                result["api_url"],
+                                result["api_type"],
+                                result["executed_at"],
+                                result["time_spent (sec)"],
+                                result["result"]) }}
         {% endfor %}
     </table>
 {% endblock %}

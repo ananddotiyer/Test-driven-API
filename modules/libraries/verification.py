@@ -117,7 +117,7 @@ def report_it (result, test="", api_url="", api_type=""):
             #Hyper-link the test to the appropriate output .csv.  For the right hyperlinking technique, refer to http://stackoverflow.com/questions/6563091/can-excel-interpret-the-urls-in-my-csv-as-hyperlinks
             test_title = test
             test = re.sub (r"^\\(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
-            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + test + ".csv\"\"" + "," + "\"\"" + test_title + "\"\")\"" + "," +
+            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + test + ".csv\"\"" + "," + "\"\"" + test + "\"\")\"" + "," +
                                          api_url + "," + api_type + "," + date_time + "," + time_spent + ",")
         else:
             global_dict["debuglog"].write (result)
