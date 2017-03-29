@@ -30,9 +30,11 @@ tests_apphomekey = [
      "lang": "15"
    },
    "api_expected":{
-     "code": [200],
      "rowcount":20,
-     "$.['item'][*].['primary_category'][0].['slug']": ["india"],
+     "call_compare_equals": {
+        "code": [200],
+        "$.['item'][0].['primary_category'][0].['slug']": ["economy"]
+      },
      "specific":False,
    },
    "api_repl": {

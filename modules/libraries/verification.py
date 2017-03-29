@@ -16,8 +16,29 @@ __status__ = "Production"
 import json
 import datetime
 import re
+import sys
 from modules.tests.tests_suite import *
 from jsonpath_rw import jsonpath, parse
+
+def compare_equals (json_path, actual, expected):
+    jsonpath_expr = parse(json_path)
+    actual = [match.value for match in jsonpath_expr.find(actual)]
+    if not (set (actual) == set (expected)): #contains or equal
+        print ("Expected " + str (expected) + " in " + json_path + ", but not found!")
+        global_dict["debuglog"].write ("Expected " + str (expected) + " in " + json_path + ", but not found!\n")
+        return False
+    else:
+        return True
+
+def compare_contains (json_path, actual, expected):
+    jsonpath_expr = parse(json_path)
+    actual = [match.value for match in jsonpath_expr.find(actual)]
+    if not (set (actual) <= set (expected)): #contains or equal
+        print ("Expected " + str (expected) + " in " + json_path + ", but not found!")
+        global_dict["debuglog"].write ("Expected " + str (expected) + " in " + json_path + ", but not found!\n")
+        return False
+    else:
+        return True
 
 def VerifyFilter (actual, expected):
     retValue = True
@@ -64,15 +85,12 @@ def VerifyExpected (actual, expected, case_sensitive=True):
                 continue
             
             try:
-                jsonpath_expr = parse(exp)
-                actual = [match.value for match in jsonpath_expr.find(actual)]
+                if exp[:5] == "call_":
+                    function = getattr (sys.modules[__name__], exp[5:])
+                    for json_path in expected[exp].keys():
+                        result = result and function (json_path, actual, expected[exp][json_path])
             except:
-                pass #No location is specified.  So, base location.    
-
-            if not (set (actual) <= set (expected[exp])): #contains or equal
-                print ("Expected " + str (expected[exp]) + " in " + exp + ", but not found!")
-                global_dict["debuglog"].write ("Expected " + str (expected[exp]) + " in " + exp + ", but not found!\n")
-                result = False
+                pass 
     except:
         result = False
         

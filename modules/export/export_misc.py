@@ -80,7 +80,7 @@ def global_store (api_store, api_params, data):
 				pass #No location is specified.  So, base location.    
 			try:
 				global_dict[var] = data
-				print (global_dict[var])
+				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the server response!  None stored.")
 
@@ -95,7 +95,7 @@ def global_store (api_store, api_params, data):
 				pass #No location is specified.  So, base location.    
 			try:
 				global_dict[var] = data
-				print (global_dict[var])
+				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the request parameters!  None stored.")
 
