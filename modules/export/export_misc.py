@@ -26,30 +26,30 @@ def write_none(f, val):
 	
 
 def write (f, column, embed=False, ends_with=','):
-    if column is None:
-        f.write (","),
-    else:
-        if isinstance (column, list):
-            all_each = ""
-            for each in column:
-                all_each += each + ".." #;
-            column = all_each #concatenate everything into a string
-        elif isinstance  (column, int) or isinstance  (column, long):
-            column = str (column)
+	if column is None:
+		f.write (","),
+	else:
+		if isinstance (column, list):
+			all_each = ""
+			for each in column:
+				all_each += each + ".." #;
+			column = all_each #concatenate everything into a string
+		elif isinstance  (column, int) or isinstance  (column, long):
+			column = str (column)
 
-        #if '\"' in column:
-        #    embed = True
+		#if '\"' in column:
+		#    embed = True
 
-        embed = True        
-        if embed:
-            f.write ("\"")
+		embed = True        
+		if embed:
+			f.write ("\"")
 
-        f.write (column.replace ("\"", "'").replace (",", "|").encode('utf-8')), #+
+		f.write (column.replace ("\"", "'").replace (",", "|").encode('utf-8')), #+
 
-        if embed:
-            f.write ("\"")
+		if embed:
+			f.write ("\"")
 
-        f.write (ends_with)
+		f.write (ends_with)
 
 def check_status_code (status_code, should_fail):
 	if status_code != 200:
@@ -67,30 +67,35 @@ def check_status_code (status_code, should_fail):
 
 def global_store (api_store, api_params, data):
 	#storing into global_dict
+
 	try:
-		for each in api_store["response"]:
+		old_data = data #store, in order to restore later
+		for each in api_store["response"].keys ():
+			var = api_store["response"][each]
+			data = old_data #before next iteration starts
 			try:
-				for each in api_store["response"].keys()[0].split ('\\'):
-					data = data[each]
+				jsonpath_expr = parse(each)
+				data = [match.value for match in jsonpath_expr.find(data)]
 			except:
 				pass #No location is specified.  So, base location.    
 			try:
-				#global_dict[each] = data[api_store["response"][each]]
-				global_dict[each] = data
-				print (global_dict[each])
+				global_dict[var] = data
+				print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the server response!  None stored.")
 
-		for each in api_store["request"]:
+		old_data = api_params #store, in order to restore later
+		for each in api_store["request"].keys():
+			var = api_store["request"][each]
+			data = old_data #before next iteration starts
 			try:
-				for each in api_store["response"].keys()[0].split ('\\'):
-					data = data[each]
+				jsonpath_expr = parse(each)
+				data = [match.value for match in jsonpath_expr.find(data)]
 			except:
 				pass #No location is specified.  So, base location.    
 			try:
-				#global_dict[each] = api_params[api_store["request"][each]]
-				global_dict[each] = api_params
-				print (global_dict[each])
+				global_dict[var] = data
+				print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the request parameters!  None stored.")
 

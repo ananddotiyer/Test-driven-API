@@ -49,7 +49,7 @@ def WriteHomeSlug (f, data_dict, current_api):
 
 def WriteItemDetails (f, item):
 	write (f, item["id"])
-	write (f, item["name"])
+	#write (f, item["name"])
 	write (f, item["typeId"])
 	write (f, item["type"])
 	#write (f, item["video_id"])
@@ -59,7 +59,7 @@ def WriteHomeSlugHeader (f, output_mode):
     if (output_mode != 'w') and (output_mode != 'h'):
         return
     f.write ("id" + ","),
-    f.write ("name" + ","),
+    #f.write ("name" + ","),
     f.write ("typeId" + ","),
     f.write ("type" + ","),
     f.write ("video_id" + "\n")

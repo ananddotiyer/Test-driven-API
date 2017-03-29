@@ -15,8 +15,9 @@ __status__ = "Production"
 
 import json
 import datetime
-from modules.tests.tests_suite import *
 import re
+from modules.tests.tests_suite import *
+from jsonpath_rw import jsonpath, parse
 
 def VerifyFilter (actual, expected):
     retValue = True
@@ -60,27 +61,17 @@ def VerifyExpected (actual, expected, case_sensitive=True):
             actual = old_actual #before next iteration starts
             
             if (exp == "rowcount") or (exp == "specific") or (exp == "filter") or (exp == "should_fail"):
-                continue;
+                continue
             
             try:
-                for each in exp.split ('\\'):
-                    actual = actual[each]
+                jsonpath_expr = parse(exp)
+                actual = [match.value for match in jsonpath_expr.find(actual)]
             except:
                 pass #No location is specified.  So, base location.    
 
-            if (isinstance (actual, list)):
-                for list_item in actual:
-                    actual_flattened += str (list_item) + ","
-            else:
-                actual_flattened = str (actual)
-
-            if not case_sensitive:
-                actual_flattened = str.lower (actual_flattened)
-                expected[exp] = str.lower (expected[exp])
-                
-            if not (actual_flattened.find(expected[exp]) >= 0): #contains expected string
-                print ("Expected " + expected[exp] + " in " + exp + ", but not found!")
-                global_dict["debuglog"].write ("Expected " + expected[exp] + " in " + exp + ", but not found!\n")
+            if not (set (actual) <= set (expected[exp])): #contains or equal
+                print ("Expected " + str (expected[exp]) + " in " + exp + ", but not found!")
+                global_dict["debuglog"].write ("Expected " + str (expected[exp]) + " in " + exp + ", but not found!\n")
                 result = False
     except:
         result = False
