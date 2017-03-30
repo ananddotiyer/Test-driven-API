@@ -4,7 +4,7 @@
 """export_misc.py: Some common support functions for exporting api responses to csv."""
 
 __author__ = "Anand Iyer"
-__copyright__ = "Copyright 2014-15, Anand Iyer"
+__copyright__ = "Copyright 2016-17, Anand Iyer"
 __credits__ = ["Anand Iyer"]
 __license__ = "GPL"
 __version__ = "2.0"

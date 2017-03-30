@@ -1,3 +1,16 @@
+#############################################################################################################################################
+"""web.py: This is the web server.  Keep this running"""
+
+__author__ = "Anand Iyer"
+__copyright__ = "Copyright 2016-17, Anand Iyer"
+__credits__ = ["Anand Iyer"]
+__license__ = "GPL"
+__version__ = "2.0"
+__maintainer__ = "Anand Iyer"
+__email__ = "ananddotiyer@gmail.com"
+__status__ = "Production"
+#############################################################################################################################################
+
 from importlib import import_module
 
 from flask import Flask, render_template

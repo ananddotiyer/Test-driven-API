@@ -4,12 +4,12 @@
 """main.py: This is the controller.  Execution starts from here"""
 
 __author__ = "Anand Iyer"
-__copyright__ = "Copyright 2016-17, Moolya Software Testing"
+__copyright__ = "Copyright 2016-17, Anand Iyer"
 __credits__ = ["Anand Iyer"]
 __license__ = "GPL"
 __version__ = "2.0"
 __maintainer__ = "Anand Iyer"
-__email__ = "anand.iyer@moolya.com"
+__email__ = "ananddotiyer@gmail.com"
 __status__ = "Production"
 #############################################################################################################################################
 
