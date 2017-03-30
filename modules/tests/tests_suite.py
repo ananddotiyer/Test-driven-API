@@ -16,9 +16,6 @@ __status__ = "Production"
 global_dict = {
 	"session_id":"", "ipaddress":"127.0.0.1",
 	"running": False,
-	# "server":"https://staging.vxwb.in",
-	# "headers": {
-	# },
 	"server":"http://dev.media.jio.com/n18/",
 	#"server":"https://api.stackexchange.com/2.2/",
 	"headers": {
@@ -33,7 +30,7 @@ run_list = ['POST', 'GET']
 
 tests_suite = [
 	"detailed_tests.tests_apphomekey",
-	#"detailed_tests.tests_comment",
-	#"detailed_tests.tests_pancake",
-	#"detailed_tests.tests_misc",
+	# "detailed_tests.tests_comment",
+	# "detailed_tests.tests_pancake",
+	# "detailed_tests.tests_misc",
 ]

@@ -32,7 +32,7 @@ tests_apphomekey = [
     "api_expected":{
       "row_json_path": "$.['item'][*]", #all item dicts
       #"row_json_path": "$.['item'][*].['anchors'][*]",#all anchor dicts for all item dicts
-      "rowcount":20,
+      "rowcount":34,
       "call_compare_equals": {
         "$.code": [200],
         "$.['item'][0].['primary_category'][0].['slug']": ["india"]
