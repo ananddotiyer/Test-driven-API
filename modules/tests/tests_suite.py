@@ -28,10 +28,10 @@ global_dict = {
 	},
 }
 
-run_list = ['POST']
+run_list = ['POST', 'GET']
 
 tests_suite = [
 	"detailed_tests.tests_apphomekey",
 	"detailed_tests.tests_comment",
-
+	"detailed_tests.tests_pancake",
 ]
