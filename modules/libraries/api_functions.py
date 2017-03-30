@@ -44,13 +44,17 @@ def api_export (current_api):
 	
 	if status_code == 200:
 		if not expected["specific"]:
-			jsonpath_expr = parse(expected["row_json_path"])
-			write_data_dict = [match.value for match in jsonpath_expr.find(data_dict)]
-
-			#above match gives a list with an embedded list, containing all items;
-			#this means, we need write_data_dict[0] to access the list items
-			rowCount = len (write_data_dict[0])
-			result = WriteRow (f, write_data_dict[0], current_api)
+			if expected["row_json_path"] != "":
+				jsonpath_expr = parse(expected["row_json_path"])
+				write_data_dict = [match.value for match in jsonpath_expr.find(data_dict)][0]
+				#above match gives a list with an embedded list, containing all items;
+				#this means, we need to get the first item in the list, before we can access its contents
+			else:
+				write_data_dict = []
+				write_data_dict.append (data_dict)
+			
+			rowCount = len (write_data_dict)
+			result = WriteRow (f, write_data_dict, current_api)
 
 			result = result and VerifyExpected (data_dict, expected)
 	else:

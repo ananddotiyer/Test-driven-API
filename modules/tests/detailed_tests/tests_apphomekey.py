@@ -34,7 +34,7 @@ tests_apphomekey = [
       "rowcount":20,
       "call_compare_equals": {
         "$.code": [200],
-        "$.['item'][0].['primary_category'][0].['slug']": ["indias"]
+        "$.['item'][0].['primary_category'][0].['slug']": ["india"]
       },
       "call_compare_types": {
         "$.code": int,
