@@ -126,7 +126,7 @@ def main_driver (run_from_web):
 				result = False
 				#get the server response
 				if api_type == "GET":
-					response = requests.get (api_url)
+					response = requests.get (api_url, headers=global_dict["headers"])
 				
 				if api_type == "DELETE":
 					api_name = api_name + "_delete" #distinguish the .csv filename for DELETE calls

@@ -46,9 +46,11 @@ def api_export (current_api):
 		if not expected["specific"]:
 			if expected["row_json_path"] != "":
 				jsonpath_expr = parse(expected["row_json_path"])
-				write_data_dict = [match.value for match in jsonpath_expr.find(data_dict)][0]
+				write_data_dict = [match.value for match in jsonpath_expr.find(data_dict)]
 				#above match gives a list with an embedded list, containing all items;
 				#this means, we need to get the first item in the list, before we can access its contents
+				if len (write_data_dict) == 1:
+					write_data_dict = write_data_dict[0]
 			else:
 				write_data_dict = []
 				write_data_dict.append (data_dict)

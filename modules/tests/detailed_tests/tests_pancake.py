@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #############################################################################################################################################
-"""tests_comment.py: Comment tests for Network18"""
+"""tests_pancake.py: Pancake tests for Network18"""
 
 __author__ = "Anand Iyer"
 __copyright__ = "Copyright 2016-17, Anand Iyer"
@@ -13,38 +13,33 @@ __email__ = "ananddotiyer@gmail.com"
 __status__ = "Production"
 #############################################################################################################################################
 
-tests_comment = [
-  ################################################comment/get########################################################
-  # P-1. Status: Done
+tests_pancake = [
+  ################################################Pancake########################################################
+  #1-1. 303=Now, Status: Done
   {
-    "api_name": "1-comment",
-    "api_type": "POST",
-    "api_base_url": "apis/common/v3/comment/get",
+    "api_name": "1-pancake",
+    "api_type": "GET",
+    "api_base_url": "apis/common/v3/pancake/get/{key}/0/2",
     "api_function": "api_export",
     "api_params": {
-      "article_id":"0023ec30dcbe11e6ab94b53e412a6ed9",
-      "user_id":"gl_102780946595724469924",
-      "page_number":0
     },
     "api_expected":{
-      "row_json_path": "$.['data'][*]",
-      "rowcount":2,
+      #"row_json_path": "$.['menu'][*]", #all menu dicts
+      "row_json_path": "$.['menu'][*].['l2_menu'][*]",#all anchor dicts for all menu dicts
+      "rowcount":20,
       "call_compare_equals": {
         "$.code": [200],
-        "$.['data'][0].['user_name']": ["Anand Iyer"],
       },
       "call_compare_types": {
         "$.code": int,
-        "$.['data'][0].['user_name']": unicode,
       },
       "specific":False,
     },
     "api_repl": {
-      "key": "bjzlhr11aevxwik0pf0x"
+    "key": "q1l1fULw5ddj8ysCkDJ8"
     },    
     "api_store": {
       "response": {
-        "$.['data'][0].['user_name']": "username",
       },
     },
     "output_mode": 'w',
