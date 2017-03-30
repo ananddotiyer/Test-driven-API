@@ -20,6 +20,7 @@ global_dict = {
 	# "headers": {
 	# },
 	"server":"http://dev.media.jio.com/n18/",
+	#"server":"https://api.stackexchange.com/2.2/",
 	"headers": {
 		"appkey":"bjzLHR11aEvXwIk0pF0x",
 		"deviceid": "q1l1fULw5ddj8ysCkDJ8",
@@ -32,6 +33,7 @@ run_list = ['POST', 'GET']
 
 tests_suite = [
 	"detailed_tests.tests_apphomekey",
-	"detailed_tests.tests_comment",
-	"detailed_tests.tests_pancake",
+	#"detailed_tests.tests_comment",
+	#"detailed_tests.tests_pancake",
+	#"detailed_tests.tests_misc",
 ]

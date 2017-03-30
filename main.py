@@ -118,6 +118,10 @@ def main_driver (run_from_web):
 				
 				api_url = (api_url + api_params_set)[:-1]
 	
+			#define headers for the api
+			headers = {}
+			headers.update (api_headers)
+			
 			#get the function pointer
 			mod = import_module ("modules.libraries.api_functions")
 			function_to_call = getattr (mod, api_function)
@@ -126,7 +130,7 @@ def main_driver (run_from_web):
 				result = False
 				#get the server response
 				if api_type == "GET":
-					response = requests.get (api_url, headers=global_dict["headers"])
+					response = requests.get (api_url, headers=headers)
 				
 				if api_type == "DELETE":
 					api_name = api_name + "_delete" #distinguish the .csv filename for DELETE calls
@@ -135,11 +139,11 @@ def main_driver (run_from_web):
 				if api_type == "PUT":
 					api_name = api_name + "_put" #distinguish the .csv filename for PUT calls
 					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
-					response = requests.put (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
+					response = requests.put (api_url, data = json.dumps (api_params), headers=headers)
 				
 				if api_type == "POST":
 					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
-					response = requests.post (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
+					response = requests.post (api_url, data = json.dumps (api_params), headers=headers)
 
 				current_api.data = response.text
 				current_api.status_code = response.status_code

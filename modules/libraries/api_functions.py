@@ -56,7 +56,7 @@ def api_export (current_api):
 				write_data_dict.append (data_dict)
 			
 			rowCount = len (write_data_dict)
-			result = WriteRow (f, write_data_dict, current_api)
+			result = result and WriteRow (f, write_data_dict, current_api)
 
 			result = result and VerifyExpected (data_dict, expected)
 	else:

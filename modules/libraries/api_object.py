@@ -33,8 +33,9 @@ class api_object(dict):
 		
 		try:
 			self.api_headers = test["api_headers"]
+			self.api_headers.update (global_dict["headers"])
 		except:
-			self.api_headers = ""
+			self.api_headers = global_dict["headers"]
 
 		self.api_expected = test["api_expected"]
 		try:
