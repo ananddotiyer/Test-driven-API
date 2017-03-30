@@ -39,7 +39,7 @@ tests_suite = [
 	#"detailed_tests.tests_lifepage",
 	#"detailed_tests.tests_uploadpost",
 	#"detailed_tests.tests_lifepost",
-	#"detailed_tests.tests_comment",
+	"detailed_tests.tests_comment",
 	#"detailed_tests.tests_follow",
 	#"detailed_tests.tests_search",
 	#"detailed_tests.tests_like",

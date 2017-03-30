@@ -24,8 +24,9 @@ def compare_equals (json_path, actual, expected):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) == set (expected)): #contains or equal
-        print ("Expected " + str (expected) + " in " + json_path + ", but not found!")
-        global_dict["debuglog"].write ("Expected " + str (expected) + " in " + json_path + ", but not found!\n")
+        error_message = "Expected %s in %s, but found %s" %(str (expected), json_path, str (actual))
+        print error_message
+        global_dict["debuglog"].write (error_message + "\n")
         return False
     else:
         return True
@@ -34,8 +35,20 @@ def compare_contains (json_path, actual, expected):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) <= set (expected)): #contains or equal
-        print ("Expected " + str (expected) + " in " + json_path + ", but not found!")
-        global_dict["debuglog"].write ("Expected " + str (expected) + " in " + json_path + ", but not found!\n")
+        error_message = "Expected %s in %s, but found %s" %(str (expected), json_path, str (actual))
+        print error_message
+        global_dict["debuglog"].write (error_message + "\n")
+        return False
+    else:
+        return True
+
+def compare_types (json_path, actual, expected):
+    jsonpath_expr = parse(json_path)
+    actual = [match.value for match in jsonpath_expr.find(actual)]
+    if not (type (actual[0]) == expected): #same type
+        error_message = "Expected %s in %s, but found %s" %(expected, json_path, type (actual[0]))
+        print error_message
+        global_dict["debuglog"].write (error_message + "\n")
         return False
     else:
         return True
@@ -119,6 +132,7 @@ def report_it (result, test="", api_url="", api_type=""):
         
         if result == "datetime":
             global_dict["debuglog"].write ("\n**" + result_string + "**\n") #only if this is the test header
+            print "\n"
             print ("**************************************************************************************")
             print (result_string)
             print ("**************************************************************************************")

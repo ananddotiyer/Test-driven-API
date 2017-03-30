@@ -17,40 +17,35 @@ tests_comment = [
   ################################################Pre-conditions-getVerificationCode,getAccessToken########################################################
   # P-1. Status: Done
   {
-    "api_name": "P-1-getVerificationCode",
+    "api_name": "1-comment",
     "api_type": "POST",
-    "api_base_url": "/api/v1/user/getVerificationCode",
-    "api_function": "getVerificationCode",
+    "api_base_url": "apis/common/v3/comment/get",
+    "api_function": "api_export",
     "api_params": {
-      "phone": "+919876500006"
+      "article_id":"0023ec30dcbe11e6ab94b53e412a6ed9",
+      "user_id":"gl_102780946595724469924",
+      "page_number":0
     },
     "api_expected":{
-      "rowcount":1,
-      "message":"Wait for text message!",
+      "row_json_path": "$.['data']",
+      "rowcount":20,
+      "call_compare_equals": {
+        "$.code": [200],
+        "$.['data'][0].['user_name']": ["Anand Iyer"],
+      },
+      "call_compare_types": {
+        "$.code": int,
+      },
       "specific":False,
     },
-    "output_mode": 'n',
-  },
-  # P-2. Status: Done
-  {
-    "api_name": "P-2-getAccessToken",
-    "api_type": "POST",
-    "api_base_url": "/api/v1/user/getAccessToken",
-    "api_function": "getAccessToken",
-    "api_params": {
-        "phone": "+919876500006",
-        "verificationCode" : "111111"
-    },
+    "api_repl": {
+      "key": "bjzlhr11aevxwik0pf0x"
+    },    
     "api_store": {
       "response": {
-        "userId":"userId",
       },
     },
-    "api_expected":{
-      "rowcount":1,
-      "message": "Verification successful!",
-      "specific":False
-    },
+    "output_mode": 'w',
   },
 
   ################################################uploadComment########################################################

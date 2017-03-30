@@ -12,7 +12,7 @@ __maintainer__ = "Anand Iyer"
 __email__ = "ananddotiyer@gmail.com"
 __status__ = "Production"
 #############################################################################################################################################
-
+import traceback
 from ..libraries.verification import *
 
 def write_none(f, val):
@@ -65,6 +65,14 @@ def check_status_code (status_code, should_fail):
 	
 	return result
 
+def get_response_schema (response):
+	try:
+		from json_schema import json_schema
+		schema = json_schema.dumps(response)
+		return schema
+	except:
+		traceback.print_exc(file=sys.stdout)
+
 def global_store (api_store, api_params, data):
 	#storing into global_dict
 
@@ -101,3 +109,54 @@ def global_store (api_store, api_params, data):
 
 	except:
 		pass
+
+####Generic####
+def WriteRow (f, data_dict, current_api):
+	try:
+		expected = current_api.api_expected
+		api_store = current_api.api_store
+		api_params = current_api.api_params
+		output_mode = current_api.output_mode
+
+		result = True
+		
+		if (output_mode == 'n'):
+			return True		
+
+		if not VerifyFilter (data_dict, expected):
+			return True
+
+		try:
+			global_store (api_store, api_params, data_dict)
+		except:
+			pass
+
+		WriteHeader (f, data_dict[0].keys(), output_mode)
+		
+		for row in data_dict:
+			WriteRowDetails (f, row)
+			
+		return result
+	except Exception, e:
+		report_it ("Row " + str (rowCount) + ":" + str(e) + " field is missing in the server response (JSON)\n")
+		f.write ("\n")
+		return False
+
+def WriteRowDetails (f, row):
+	row_string = ""
+	for column in row.values ():
+		row_string += "%s\t" %(unicode (column))
+
+	row_string = row_string.strip (',')
+	f.write (row_string + "\n")
+	
+def WriteHeader (f, headers, output_mode):
+	if (output_mode != 'w') and (output_mode != 'h'):
+		return
+	
+	header_string = ""
+	for header in headers:
+		header_string += "%s\t" %(unicode (header))
+
+	header_string = header_string.strip (',')
+	f.write (header_string + "\n")

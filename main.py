@@ -125,12 +125,24 @@ def main_driver (run_from_web):
 			try:
 				result = False
 				#get the server response
-		
+				if api_type == "GET":
+					response = requests.get (api_url)
+				
+				if api_type == "DELETE":
+					api_name = api_name + "_delete" #distinguish the .csv filename for DELETE calls
+					response = requests.delete (api_url)
+				
+				if api_type == "PUT":
+					api_name = api_name + "_put" #distinguish the .csv filename for PUT calls
+					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+					response = requests.put (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
+				
 				if api_type == "POST":
 					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
-					req = requests.post (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
-					current_api.data = req.text
-					current_api.status_code = req.status_code
+					response = requests.post (api_url, data = json.dumps (api_params), headers=global_dict["headers"])
+
+				current_api.data = response.text
+				current_api.status_code = response.status_code
 		
 				actuals_folder = global_dict["actuals_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
 				current_api.actuals_folder = actuals_folder
