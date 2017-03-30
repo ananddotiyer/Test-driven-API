@@ -32,18 +32,6 @@ run_list = ['POST']
 
 tests_suite = [
 	"detailed_tests.tests_apphomekey",
-	#"detailed_tests.tests_authentication",
-	#"detailed_tests.tests_profile",
-	#"detailed_tests.tests_notifications",
-	#"detailed_tests.tests_loop",
-	#"detailed_tests.tests_lifepage",
-	#"detailed_tests.tests_uploadpost",
-	#"detailed_tests.tests_lifepost",
 	"detailed_tests.tests_comment",
-	#"detailed_tests.tests_follow",
-	#"detailed_tests.tests_search",
-	#"detailed_tests.tests_like",
-	#"detailed_tests.tests_contact",
-	#"detailed_tests.tests_hashtag",
-	#"detailed_tests.tests_reportcontent",
+
 ]
