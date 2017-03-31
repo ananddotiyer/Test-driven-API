@@ -14,10 +14,10 @@ __status__ = "Production"
 #############################################################################################################################################
 
 global_dict = {
-	"session_id":"", "ipaddress":"127.0.0.1",
 	"running": False,
 	"server":"http://dev.media.jio.com/n18/",
 	#"server":"https://api.stackexchange.com/2.2/",
+	#"server":"http://api-beta.wally.me/",
 	"headers": {
 		"appkey":"bjzLHR11aEvXwIk0pF0x",
 		"deviceid": "q1l1fULw5ddj8ysCkDJ8",
@@ -29,8 +29,9 @@ global_dict = {
 run_list = ['POST', 'GET']
 
 tests_suite = [
-	"detailed_tests.tests_apphomekey",
-	# "detailed_tests.tests_comment",
-	# "detailed_tests.tests_pancake",
-	# "detailed_tests.tests_misc",
+	"Network18.tests_apphomekey",
+	#"Network18.tests_comment",
+	#"Network18.tests_pancake",
+	#"Wally.tests_token",
+	#"Misc.tests_misc",
 ]
