@@ -26,6 +26,7 @@ def api_export (current_api):
 	filename = current_api.actuals_folder
 	expected = current_api.api_expected
 	data_org = current_api.data
+	response_json = current_api.response_json
 	output_mode = current_api.output_mode
 	status_code = current_api.status_code
 
@@ -35,6 +36,13 @@ def api_export (current_api):
 		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
 	else:
 		f = None
+	
+	if response_json == "write":
+		schema = get_response_schema (data_org, filename + ".json")
+			
+	if response_json == "match":
+		schema_object = create_schema_object (filename + ".json")
+		print full_match_schema (data_org, schema_object)
 	
 	data_dict = json.loads (data_org)
 

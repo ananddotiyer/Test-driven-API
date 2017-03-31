@@ -51,6 +51,7 @@ tests_apphomekey = [
         "$.['item'][0].['primary_category'][0].['slug']": "slug"
       },
     },
+    "response_json": "match",
     "output_mode": 'w',
   },
 ]

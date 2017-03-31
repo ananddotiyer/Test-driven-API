@@ -65,11 +65,32 @@ def check_status_code (status_code, should_fail):
 	
 	return result
 
-def get_response_schema (response):
+def get_response_schema (response, write_file):
 	try:
 		from json_schema import json_schema
 		schema = json_schema.dumps(response)
-		return schema
+		with open (write_file, "w") as s:
+			s.write (schema)
+	except:
+		traceback.print_exc(file=sys.stdout)
+
+def create_schema_object (schema):
+	try:
+		schema_contents =""
+		with open (schema) as s:
+			for line in s:
+				schema_contents += line
+
+		from json_schema import json_schema
+		schema_object = json_schema.loads(schema_contents)
+		return schema_object
+	except:
+		traceback.print_exc(file=sys.stdout)
+	
+def full_match_schema (data, schema_object):
+	try:
+		from json_schema import json_schema
+		return schema_object.full_check (data)
 	except:
 		traceback.print_exc(file=sys.stdout)
 

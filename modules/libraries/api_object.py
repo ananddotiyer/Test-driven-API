@@ -42,6 +42,11 @@ class api_object(dict):
 			self.api_expected["should_fail"] = test["api_expected"]["should_fail"]
 		except:
 			self.api_expected["should_fail"] = False #default
+
+		try:
+			self.response_json = test["response_json"]
+		except:
+			self.response_json = ''	#default
 			
 		try:
 			self.output_mode = test["output_mode"]
