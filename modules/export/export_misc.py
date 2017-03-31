@@ -82,12 +82,20 @@ def global_store (api_store, api_params, data):
 			var = api_store["response"][each]
 			data = old_data #before next iteration starts
 			try:
-				jsonpath_expr = parse(each)
-				data = [match.value for match in jsonpath_expr.find(data)]
+				if each != "":
+					jsonpath_expr = parse(each)
+					store_data = [match.value for match in jsonpath_expr.find(data)]
+					#above match gives a list with an embedded list, containing all items;
+					#this means, we need to get the first item in the list, before we can access its contents
+					if len (store_data) == 1:
+						store_data = store_data[0]
+				else:
+					store_data = []
+					store_data.append (data)
 			except:
-				pass #No location is specified.  So, base location.    
+				pass 
 			try:
-				global_dict[var] = data
+				global_dict[var] = store_data
 				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the server response!  None stored.")
@@ -97,12 +105,20 @@ def global_store (api_store, api_params, data):
 			var = api_store["request"][each]
 			data = old_data #before next iteration starts
 			try:
-				jsonpath_expr = parse(each)
-				data = [match.value for match in jsonpath_expr.find(data)]
+				if each != "":
+					jsonpath_expr = parse(each)
+					store_data = [match.value for match in jsonpath_expr.find(data)]
+					#above match gives a list with an embedded list, containing all items;
+					#this means, we need to get the first item in the list, before we can access its contents
+					if len (store_data) == 1:
+						store_data = store_data[0]
+				else:
+					store_data = []
+					store_data.append (data)
 			except:
-				pass #No location is specified.  So, base location.    
+				pass 
 			try:
-				global_dict[var] = data
+				global_dict[var] = store_data
 				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the request parameters!  None stored.")
@@ -120,9 +136,6 @@ def WriteRow (f, data_dict, current_api):
 
 		result = True
 		
-		if (output_mode == 'n'):
-			return True		
-
 		if not VerifyFilter (data_dict, expected):
 			return True
 
@@ -130,6 +143,9 @@ def WriteRow (f, data_dict, current_api):
 			global_store (api_store, api_params, data_dict)
 		except:
 			pass
+
+		if (output_mode == 'n'):
+			return True		
 
 		WriteHeader (f, data_dict[0].keys(), output_mode)
 		
