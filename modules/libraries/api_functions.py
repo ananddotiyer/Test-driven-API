@@ -37,13 +37,6 @@ def api_export (current_api):
 	else:
 		f = None
 	
-	if response_json == "write":
-		schema = get_response_schema (data_org, filename + ".json")
-			
-	if response_json == "match":
-		schema_object = create_schema_object (filename + ".json")
-		print full_match_schema (data_org, schema_object)
-	
 	data_dict = json.loads (data_org)
 
 	rowCount = 0
@@ -51,6 +44,15 @@ def api_export (current_api):
 	result = check_status_code (status_code, expected["should_fail"])
 	
 	if status_code == 200:
+		if response_json == "write":
+			schema = get_response_schema (data_org, filename + ".json")
+				
+		if response_json == "match":
+			schema_object = create_schema_object (filename + ".json")
+			full_match_output = full_match_schema (data_org, schema_object)
+			print full_match_output
+			global_dict["debuglog"].write (full_match_output + "\n")
+		
 		if not expected["specific"]:
 			if expected["row_json_path"] != "":
 				jsonpath_expr = parse(expected["row_json_path"])
