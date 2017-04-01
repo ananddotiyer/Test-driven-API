@@ -41,6 +41,7 @@ tests_apphomekey = [
         "$.code": int,
         "$.['item'][0].['primary_category'][0].['slug']": unicode
       },
+      "response_json": "match",
       "specific":False,
     },
     "api_repl": {
@@ -51,7 +52,6 @@ tests_apphomekey = [
         "$.['item'][0].['primary_category'][0].['slug']": "slug"
       },
     },
-    "response_json": "match",
     "output_mode": 'w',
   },
 ]

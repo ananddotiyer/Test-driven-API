@@ -93,7 +93,6 @@ def main_driver (run_from_web):
 			api_params = current_api.api_params
 			api_headers = current_api.api_headers
 			api_expected = current_api.api_expected
-			response_json = current_api.response_json
 			output_mode = current_api.output_mode
 			
 			#substituting for the api_repl

@@ -26,7 +26,6 @@ def api_export (current_api):
 	filename = current_api.actuals_folder
 	expected = current_api.api_expected
 	data_org = current_api.data
-	response_json = current_api.response_json
 	output_mode = current_api.output_mode
 	status_code = current_api.status_code
 
@@ -44,14 +43,9 @@ def api_export (current_api):
 	result = check_status_code (status_code, expected["should_fail"])
 	
 	if status_code == 200:
+		response_json = expected["response_json"]
 		if response_json == "write":
 			schema = get_response_schema (data_org, filename + ".json")
-				
-		if response_json == "match":
-			schema_object = create_schema_object (filename + ".json")
-			full_match_output = full_match_schema (data_org, schema_object)
-			print full_match_output
-			global_dict["debuglog"].write (full_match_output + "\n")
 		
 		if not expected["specific"]:
 			if expected["row_json_path"] != "":
@@ -68,9 +62,9 @@ def api_export (current_api):
 			rowCount = len (write_data_dict)
 			result = result and WriteRow (f, write_data_dict, current_api)
 
-			result = result and VerifyExpected (data_dict, expected)
+			result = result and VerifyExpected (data_org, expected, json_file=filename + ".json")
 	else:
-		result = result and VerifyExpected (data_dict, expected)
+		result = result and VerifyExpected (data_org, expected)
 
 	result = result and VerifyRowCount (rowCount, expected["rowcount"])
 			

@@ -19,6 +19,7 @@ import re
 import sys
 from modules.tests.tests_suite import *
 from jsonpath_rw import jsonpath, parse
+from json_schema import json_schema
 
 def compare_equals (json_path, actual, expected):
     jsonpath_expr = parse(json_path)
@@ -53,6 +54,32 @@ def compare_types (json_path, actual, expected):
     else:
         return True
 
+def get_response_schema (response, write_file):
+	try:
+		schema = json_schema.dumps(response)
+		with open (write_file, "w") as s:
+			s.write (schema)
+	except:
+		traceback.print_exc(file=sys.stdout)
+
+def create_schema_object (schema):
+	try:
+		schema_contents =""
+		with open (schema) as s:
+			for line in s:
+				schema_contents += line
+
+		schema_object = json_schema.loads(schema_contents)
+		return schema_object
+	except:
+		traceback.print_exc(file=sys.stdout)
+	
+def full_match_schema (data, schema_object):
+	try:
+		return schema_object.full_check (data)
+	except:
+		traceback.print_exc(file=sys.stdout)
+
 def VerifyFilter (actual, expected):
     retValue = True
     try:
@@ -85,9 +112,19 @@ def VerifyRowCount (actual_rowCount, exp_rowCount):
     else:
         return True
 
-def VerifyExpected (actual, expected, case_sensitive=True):
+def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
     result = True
     actual_flattened = ""
+
+    #match json structure exported from api_functions
+    response_json = expected["response_json"]
+    if response_json == "match":
+        schema_object = create_schema_object (json_file)
+        full_match_output = full_match_schema (actual, schema_object)
+        print full_match_output
+        global_dict["debuglog"].write (full_match_output + "\n")
+
+    actual = json.loads (actual)
 
     old_actual = actual #store, in order to restore later
     try:
@@ -103,11 +140,25 @@ def VerifyExpected (actual, expected, case_sensitive=True):
                     for json_path in expected[exp].keys():
                         result = result and function (json_path, actual, expected[exp][json_path])
             except:
-                pass 
+                pass
     except:
         result = False
         
     return result
+
+def check_status_code (status_code, should_fail):
+	if status_code != 200:
+		if not should_fail:
+			result = False
+		else:
+			result = True
+	else:
+		if not should_fail:
+			result = True
+		else:
+			result = False
+	
+	return result
 
 def report_start ():
     #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result\n")
