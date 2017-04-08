@@ -33,6 +33,7 @@ tests_pancake = [
       "call_compare_types": {
         "$.code": int,
       },
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {

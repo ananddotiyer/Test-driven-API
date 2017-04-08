@@ -135,7 +135,7 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
             result = False
             schema_object = json_schema.loads(schema)
             full_match_output = full_match_schema (actual, schema_object)
-            print "Schema of resultant JSON response not matching with expected schema.  Check debuglog for details."
+            print "Schema match unsuccessful.  Check debuglog for details."
             global_dict["debuglog"].write (full_match_output + "\n")
         else:
             result = True
