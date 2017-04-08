@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-u"""Validators padrão a serem usados pelo json_schema."""
+"""Standard validators to be used by json_schema."""
 
 import re
 from datetime import datetime
@@ -7,28 +7,24 @@ from datetime import datetime
 
 class StringValidator:
 
-    u"""Classe apenas para agrupar os metodos do validador.
+    """Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item é um string e se o tamanho máximo não
-        ultrapassa max lenght
+    Validation:
+        Check if the item is a string and if the maximum size doesn't exceed max length.
 
-    Formatos possíveis:
-        "str"
-        "str:max lenght
+        Possible formats: "Str",  "Str: max length"
 
-    Ex:
-        "str:10"
+        Former: "Str: 10"
     """
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("str")
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato da string."""
+        """Validator of the string."""
         if isinstance(item, str) or isinstance(item, unicode):
             if item_schema.startswith("str:"):
                 try:
@@ -45,12 +41,12 @@ class StringValidator:
 class IntValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item é um Int e se o valor está entre min e max
+    Validation:
+        Check if the item is an Int and if the value is between min and max
 
-    Formatos possíveis:
+    Possible formats:
         "int"
         "int:min:max
 
@@ -60,12 +56,12 @@ class IntValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("int")
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato do int."""
+        """Validator of fact of int."""
         if not isinstance(item, int):
             return False
         if item_schema == "int":
@@ -80,13 +76,13 @@ class IntValidator:
 
 class FloatValidator:
 
-    u"""
-    Classe apenas para agrupar os metodos do validador.
+    """
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item é um Float e se o valor está entre min e max
+    Validation:
+        Check if the item is a Float and if the value is between min and max
 
-    Formatos possíveis:
+    Possible formats:
         "float"
         "float:min:max
 
@@ -96,7 +92,7 @@ class FloatValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("float")
 
     @classmethod
@@ -118,12 +114,12 @@ class FloatValidator:
 class UrlValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item é um Url
+    Validation:
+        Check if the match item in a url
 
-    Formatos possíveis:
+    Possible formats:
         "url"
 
     Ex:
@@ -132,12 +128,12 @@ class UrlValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema == "url"
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato do float."""
+        """Validator of the url."""
         regex = re.compile(r'^(?:http|ftp)s?://'  # HTTP, HTTPS, FTP, FTPS
                            # Dominio
                            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
@@ -157,12 +153,12 @@ class UrlValidator:
 class BooleanValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item é um Boolean
+    Validation:
+        Check if the match item in a boolean
 
-    Formatos possíveis:
+    Possible formats:
         "bool"
         "bool:True"
         "bool:False"
@@ -173,12 +169,12 @@ class BooleanValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("bool")
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato do bool."""
+        """Validator of the bool."""
         if ":" in item_schema:
             value = item_schema.split(":")[1] == "True"
             return item == value
@@ -188,12 +184,12 @@ class BooleanValidator:
 class RegexValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o item match em um regex
+    Validation:
+        Check if the match item in a regex
 
-    Formatos possíveis:
+    Possible formats:
         "regex:regex string"
 
     Ex:
@@ -202,7 +198,7 @@ class RegexValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         if schema.startswith("regex:"):
             re.compile(schema.replace("regex:", ""))
             return True
@@ -210,7 +206,7 @@ class RegexValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato do bool."""
+        """Validator of the Regex."""
         regex = re.compile(item_schema.replace("regex:", ""))
         return True if regex.match(item) else False
 
@@ -218,12 +214,12 @@ class RegexValidator:
 class AnyValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Aceita qualquer coisa
+    Validation:
+        Accept anything
 
-    Formatos possíveis:
+    Possible formats:
         "any"
 
     Ex:
@@ -232,24 +228,24 @@ class AnyValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("any")
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Como pode ser qualquer coisa sempre retorna True."""
+        """How can anything ever return True?"""
         return True
 
 
 class NullValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o valor é "null"
+    Validation:
+        Check if the value is "null"
 
-    Formatos possíveis:
+    Possible formats:
         "null"
 
     Ex:
@@ -258,25 +254,25 @@ class NullValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema == "null"
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Como pode ser qualquer coisa sempre retorna True."""
+        """How can anything ever return True?"""
         return item is None
 
 
 class PythonValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o valor passa numa expressão python definida
+    Validation:
+        Check if the value passes in a defined python expression
 
-    Formatos possíveis:
-        "python:codigo_python"
+    Possible formats:
+        "Python: python_code"
 
     Ex:
         "python:value.upper() == value"
@@ -284,12 +280,12 @@ class PythonValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("python:")
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Testa o código python."""
+        u"""Test the python code."""
         src = item_schema.replace("python:", "")
         src = """def temporary_function(value):\n    return %s""" % src
         try:
@@ -302,13 +298,13 @@ class PythonValidator:
 class DatetimeValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o valor confere num datetime.strptime
+    Validation:
+        Check if the value confers on a datetime.strptime
 
-    Formatos possíveis:
-        "datetime:datetime string formater"
+    Possible formats:
+        "datetime:datetime string formatter"
 
     Ex:
         "datetime:%Y-%m-%d"
@@ -316,12 +312,12 @@ class DatetimeValidator:
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("datetime:")
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Testa o datetime.strptime()."""
+        """Tests the datetime.strptime ()."""
         string_formater = item_schema.replace("datetime:", "")
         try:
             datetime.strptime(item, string_formater)
@@ -333,28 +329,28 @@ class DatetimeValidator:
 class EmptyValidator:
 
     u"""
-    Classe apenas para agrupar os metodos do validador.
+    Class only for grouping the validator methods.
 
-    Validação:
-        Checa se o valor está vazio
+    Validation:
+        Check if the value is empty
 
-    Formatos possíveis:
-        "empty:list"
-        "empty:dict"
-        "empty:hash"
-        "empty:object"
+    Possible formats:
+        "Empty: list"
+        "Empty: dict"
+        "Empty: hash"
+        "Empty: object"
 
-    dict, hash e object são sinonimos.
+    Dict, hash and object are synonymous.
     """
 
     @classmethod
     def schema_lookout(cls, schema):
-        """Checa se dado schema deve ser validado por este Validator."""
+        """Check if given schema must be validated by this Validator."""
         return schema.startswith("empty:")
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Testa se o item é de dado tipo e está vazio."""
+        u"""Tests whether the item is of type data and is empty."""
         tipo = item_schema.replace("empty:", "")
         tipos = {"dict": dict, "hash": dict, "object": dict, "list": list}
         return isinstance(item, tipos[tipo]) and len(item) == 0
