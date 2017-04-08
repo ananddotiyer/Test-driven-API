@@ -17,9 +17,10 @@ import json
 import datetime
 import re
 import sys
+import traceback
+import json_schema
 from modules.tests.tests_suite import *
 from jsonpath_rw import jsonpath, parse
-from json_schema import json_schema
 
 def compare_equals (json_path, actual, expected):
     jsonpath_expr = parse(json_path)
@@ -62,21 +63,27 @@ def get_response_schema (response, write_file):
 	except:
 		traceback.print_exc(file=sys.stdout)
 
-def create_schema_object (schema):
+def create_schema (schema):
 	try:
 		schema_contents =""
 		with open (schema) as s:
 			for line in s:
 				schema_contents += line
 
-		schema_object = json_schema.loads(schema_contents)
-		return schema_object
+		#schema_object = json_schema.loads(schema_contents)
+		return schema_contents
 	except:
 		traceback.print_exc(file=sys.stdout)
 	
 def full_match_schema (data, schema_object):
 	try:
 		return schema_object.full_check (data)
+	except:
+		traceback.print_exc(file=sys.stdout)
+
+def match_schema (data, schema_object):
+	try:
+		return json_schema.match (data, schema_object)
 	except:
 		traceback.print_exc(file=sys.stdout)
 
@@ -117,13 +124,23 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
     actual_flattened = ""
 
     #match json structure exported from api_functions
-    response_json = expected["response_json"]
-    if response_json == "match":
-        schema_object = create_schema_object (json_file)
-        full_match_output = full_match_schema (actual, schema_object)
-        print full_match_output
-        global_dict["debuglog"].write (full_match_output + "\n")
-
+    try:
+        response_schema = expected["response_schema"]
+    except:
+        response_schema = "none"
+        
+    if response_schema == "match":
+        schema = create_schema (json_file)
+        if not match_schema (actual, schema):
+            result = False
+            schema_object = json_schema.loads(schema)
+            full_match_output = full_match_schema (actual, schema_object)
+            print "Schema of resultant JSON response not matching with expected schema.  Check debuglog for details."
+            global_dict["debuglog"].write (full_match_output + "\n")
+        else:
+            result = True
+            print "Schema match successful"
+            
     actual = json.loads (actual)
 
     old_actual = actual #store, in order to restore later

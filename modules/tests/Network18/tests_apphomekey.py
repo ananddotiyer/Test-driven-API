@@ -35,13 +35,13 @@ tests_apphomekey = [
       "rowcount":34,
       "call_compare_equals": {
         "$.code": [200],
-        "$.['item'][0].['primary_category'][0].['slug']": ["india"]
+        "$.['item'][0].['primary_category'][0].['slug']": ["politics"]
       },
       "call_compare_types": {
         "$.code": int,
         "$.['item'][0].['primary_category'][0].['slug']": unicode
       },
-      "response_json": "match",
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {

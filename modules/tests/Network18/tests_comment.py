@@ -37,6 +37,7 @@ tests_comment = [
         "$.code": int,
         "$.['data'][0].['user_name']": unicode,
       },
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {
@@ -47,7 +48,6 @@ tests_comment = [
         "$.['data'][0].['user_name']": "username",
       },
     },
-    "response_json": "match",
     "output_mode": 'w',
   },
 ]

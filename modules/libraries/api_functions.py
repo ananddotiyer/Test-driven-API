@@ -43,8 +43,12 @@ def api_export (current_api):
 	result = check_status_code (status_code, expected["should_fail"])
 	
 	if status_code == 200:
-		response_json = expected["response_json"]
-		if response_json == "write":
+		try:
+			response_schema = expected["response_schema"]
+		except:
+			response_schema = "none"
+			
+		if response_schema == "write":
 			schema = get_response_schema (data_org, filename + ".json")
 		
 		if not expected["specific"]:
