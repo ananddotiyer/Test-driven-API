@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+#Forked from https://github.com/nano-labs/json_schema
+
 """Standard validators to be used by json_schema."""
 
 import re
@@ -40,7 +42,7 @@ class StringValidator:
 
 class IntValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -97,7 +99,7 @@ class FloatValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Validador de fato do float."""
+        """Validator of float fact."""
         if not isinstance(item, float):
             return False
         if item_schema == "float":
@@ -113,7 +115,7 @@ class FloatValidator:
 
 class UrlValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -135,13 +137,13 @@ class UrlValidator:
     def validator(cls, item, item_schema):
         """Validator of the url."""
         regex = re.compile(r'^(?:http|ftp)s?://'  # HTTP, HTTPS, FTP, FTPS
-                           # Dominio
+                           # Domain
                            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
                            # Localhost
                            r'localhost|'
                            # IP
                            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-                           # Porta
+                           # Port
                            r'(?::\d+)?'
                            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         try:
@@ -152,7 +154,7 @@ class UrlValidator:
 
 class BooleanValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -183,7 +185,7 @@ class BooleanValidator:
 
 class RegexValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -213,7 +215,7 @@ class RegexValidator:
 
 class AnyValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -239,7 +241,7 @@ class AnyValidator:
 
 class NullValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -265,7 +267,7 @@ class NullValidator:
 
 class PythonValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -285,7 +287,7 @@ class PythonValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Test the python code."""
+        """Test the python code."""
         src = item_schema.replace("python:", "")
         src = """def temporary_function(value):\n    return %s""" % src
         try:
@@ -297,7 +299,7 @@ class PythonValidator:
 
 class DatetimeValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -328,7 +330,7 @@ class DatetimeValidator:
 
 class EmptyValidator:
 
-    u"""
+    """
     Class only for grouping the validator methods.
 
     Validation:
@@ -350,7 +352,7 @@ class EmptyValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Tests whether the item is of type data and is empty."""
+        """Tests whether the item is of type data and is empty."""
         tipo = item_schema.replace("empty:", "")
         tipos = {"dict": dict, "hash": dict, "object": dict, "list": list}
         return isinstance(item, tipos[tipo]) and len(item) == 0

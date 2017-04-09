@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+#Forked from https://github.com/nano-labs/json_schema
+
 import json
 
 from validators import (StringValidator, IntValidator, FloatValidator,
@@ -74,7 +76,7 @@ def dumps(j, *args, **kwargs):
             retorno = []
             for i in valor:
                 retorno.append(montador(i))
-            # Checa se é uma lista de tamanho flexivel
+            # Check if it's a flexible size list
             if retorno:
                 # print merge_schema_tree(retorno[1], retorno[0])
                 if all([_match_tree(r, retorno[0]) for r in retorno]):
