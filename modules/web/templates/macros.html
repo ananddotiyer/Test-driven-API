@@ -14,6 +14,11 @@
     </tr>
 {% endmacro %}
 
+<!--Created to work with schema.html, but cannot get it to work.-->
+{% macro schema_row(tab, line) %}
+    <p class="tab" + {{ tab }}>{{ line}}</p>
+{% endmacro %}
+
 {% macro result_row(test_path, api_url, api_type, executed_at, time_spent, result) %}
     <tr>
         {{ display_link (api_url, api_type == "GET") }}
