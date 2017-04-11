@@ -1,4 +1,3 @@
-<!--Cannot get this to work.-->
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
@@ -6,43 +5,37 @@
 
 {% block page_content %}
     <div class="container">
-        <h3>{{ num_lines }}</h3>
-        {% for index in {{ num_lines }} %}
-            <p>index</p>
-            {{ macros.schema_row(tabs[index], schema[index]) }}
+        {% for index in indices %}
+            {% set tab = "tab" ~ tabs[index] %}
+            {{ macros.schema_row(tab, schema[index]) }}
         {% endfor %}
-    
-        <!--Uncommenting the following block works, but not always.-->
-        <!--<p>{</p>-->
-        <!--<p class="tab1"><mark>"code": "pass",</mark></p>-->
-        <!--<p class="tab1">"messsage": "pass",</p>-->
-        <!--<p class="tab1">"item": [</p>-->
-        <!--<p class="tab2">{</p>-->
-        <!--<p class="tab3">"typeId": "pass", </p>-->
-        <!--<p class="tab3">"bannerMedium": "pass", </p>-->
-        <!--<p class="tab3">"imageMedium": "pass", </p>-->
-        <!--<p class="tab3">"image": "pass", </p>-->
-        <!--<p class="tab3">"langId": "pass", </p>-->
-        <!--<p class="tab3">"seriesname": "pass", </p>-->
-        <!--<p class="tab3">"urlSlug": "pass", </p>-->
-        <!--<p class="tab3">"ugcId": "pass", </p>-->
-        <!--<p class="tab3">"imageLow": "pass", </p>-->
-        <!--<p class="tab3">"shortDescription": "pass", </p>-->
-        <!--<p class="tab3">"fail: This dict should have keys [u'typeId', u'type']"</p>-->
-        <!--<p class="tab2">}</p>-->
-        <!--<p class="tab1">]</p>-->
-        <!--<p>}</p>-->
     </div>
-    
+
     <style>
+    .fail {
+        background-color: #f4511e; /* Orange */
+        color: #ffffff;
+    }
     .tab1 {
-        padding-left:2em;
+        padding-left:1em;
     }
     .tab2 {
-        padding-left:4em;
+        padding-left:2em;
     }
     .tab3 {
+        padding-left:3em;
+    }
+    .tab4 {
+        padding-left:4em;
+    }
+    .tab5 {
+        padding-left:5em;
+    }
+    .tab6 {
         padding-left:6em;
+    }
+    .tab7 {
+        padding-left:7em;
     }
     </style>
 {% endblock %}

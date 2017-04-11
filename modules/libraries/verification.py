@@ -137,6 +137,8 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
             full_match_output = full_match_schema (actual, schema_object)
             print "Schema match unsuccessful.  Check debuglog for details."
             global_dict["debuglog"].write (full_match_output + "\n")
+            with open (global_dict["actuals_folder"] + "schema.txt", "w") as writer:
+                writer.write (full_match_output + "\n")
         else:
             result = True
             print "Schema match successful"

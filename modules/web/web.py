@@ -69,26 +69,23 @@ def run ():
     except:
         return render_template ('no_results.html', running=global_dict["running"])
 
-#Cannot get this to work.  Always raises exception.  When schema.html is rendered without parameters, it works sometimes, but not always.
 @app.route ("/schema")
 def schema ():
+    lines = []
+    tabs = []
+
+    reader = open('..\\tests\\schema.txt')
+    for line in reader:
+        tabs_num = (len(line) - len(line.lstrip(' '))) / 4 #number of tabs
+        tabs.append (tabs_num)
+        lines.append(line.strip ())
+    reader.close()
+
     try:
-        lines = []
-        tabs = []
-        reader = open('..\\tests\\schema.txt')
-        for line in reader:
-            tabs_num = (len(line) - len(line.lstrip(' '))) / 4 #number of tabs
-            tabs.append (tabs_num)
-            lines.append(line.strip ())
-        reader.close()
-        
-        num_lines = len (lines)
-        
-        return render_template ('schema.html', num_lines=num_lines, tabs=tabs, schema=lines)
-        #return render_template ('schema.html')
+        return render_template ('schema.html', indices=range (len (tabs)), tabs=tabs, schema=lines)
     except:
         return render_template ('no_results.html', running=global_dict["running"])
-    
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html')
