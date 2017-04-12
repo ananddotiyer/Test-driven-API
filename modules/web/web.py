@@ -61,9 +61,23 @@ def run ():
         results_list = []
         for line in reader:
             results_list.append(line)
+            
+            print line
             #making the path for the exported csv file
-            line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[1].strip ('")\\')
-            line["test_path"] = "file://%s/%s.csv" %(tests_folder,line["test_path"])
+            line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+            line["test_path"] = "file://%s/%s" %(tests_folder,line["test_path"])
+            
+            #making the path for the specific debuglog
+            split_result = line["result"].replace ('=HYPERLINK', "").split (',')
+            line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
+            line["debuglog"] = "file://%s/%s" %(tests_folder,line["debuglog"])
+            line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
+
+            #making the path for the schema compare file
+            print line["schema"]
+            line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+            line["schema"] = "file://%s/%s" %(tests_folder,line["schema"])
+            print line["schema"]
              
         return render_template ('run.html', results=results_list)
     except:

@@ -35,9 +35,6 @@ def main_driver (run_from_web):
 		global_dict["reslog"] = "modules\\tests\\"
 		global_dict["actuals_folder"] = "modules\\tests\\"
 	
-	global_dict["debuglog"] = open(global_dict["debuglog"] + "debuglog.txt",'w')
-	global_dict["reslog"]  = open(global_dict["reslog"] + "passfaillog.csv",'a')
-	
 	report_start ()
 	
 	for tests in tests_suite:

@@ -82,10 +82,10 @@ def full_match_schema (data, schema_object):
 		traceback.print_exc(file=sys.stdout)
 
 def match_schema (data, schema_object):
-	try:
-		return json_schema.match (data, schema_object)
-	except:
-		traceback.print_exc(file=sys.stdout)
+    try:
+        return json_schema.match (data, schema_object)
+    except:
+        traceback.print_exc(file=sys.stdout)
 
 def VerifyFilter (actual, expected):
     retValue = True
@@ -131,17 +131,23 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
         
     if response_schema == "match":
         schema = create_schema (json_file)
-        if not match_schema (actual, schema):
+
+        schema_object = json_schema.loads(schema)
+        full_match_output = full_match_schema (actual, schema_object)
+
+        if "fail" in full_match_output:
             result = False
-            schema_object = json_schema.loads(schema)
-            full_match_output = full_match_schema (actual, schema_object)
-            print "Schema match unsuccessful.  Check debuglog for details."
-            global_dict["debuglog"].write (full_match_output + "\n")
-            with open (global_dict["actuals_folder"] + "schema.txt", "w") as writer:
-                writer.write (full_match_output + "\n")
+            print "Schema match unsuccessful.  Check schema_file for details."
         else:
             result = True
             print "Schema match successful"
+
+        #last schema (irrespective of pass or fail) is always accessible from the Schema tab in the main navigation  bar.
+        with open (global_dict["actuals_folder"] + global_dict["schema_filename"], "a") as writer:
+            writer.write (full_match_output + "\n")
+
+        with open (global_dict["actuals_folder"] + "schema.txt", "a") as writer:
+            writer.write (full_match_output + "\n")
             
     actual = json.loads (actual)
 
@@ -180,18 +186,26 @@ def check_status_code (status_code, should_fail):
 	return result
 
 def report_start ():
-    #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result\n")
     global_dict["start_time"] = datetime.datetime.now()
-    
+    date_time = global_dict["start_time"].strftime('%Y-%m-%d_%H-%M-%S')
+
+    global_dict["debuglog_filename"] = "debuglog_" + date_time + ".txt"
+    global_dict["schema_filename"] = "schema_" + date_time + ".txt"
+    global_dict["debuglog"] = open(global_dict["debuglog"] + global_dict["debuglog_filename"],'w')
+
+    global_dict["reslog"]  = open(global_dict["reslog"] + "passfaillog.csv",'a')
+    #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result,schema\n")
+
 def report_it (result, test="", api_url="", api_type=""):
     #print (result)
     if isinstance (result, bool):
         if (result):
             print ("All is well!!")
             global_dict["debuglog"].write ("All is well!!\n")
-            global_dict["reslog"].write ("PASS\n")
+            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"PASS\"\")\",")
         else:
-            global_dict["reslog"].write ("FAIL\n")
+            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"FAIL\"\")\",")
+        global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['schema_filename'] + "\"\"" + "," + "\"\"schema\"\")\"\n")
     else:
         result = str (result)
         global_dict["stop_time"] = datetime.datetime.now()
@@ -208,8 +222,12 @@ def report_it (result, test="", api_url="", api_type=""):
             print ("**************************************************************************************")
             
             #Hyper-link the test to the appropriate output .csv.  For the right hyperlinking technique, refer to http://stackoverflow.com/questions/6563091/can-excel-interpret-the-urls-in-my-csv-as-hyperlinks
-            test_title = test
-            test = re.sub (r"^\\(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
+            #test_title = test
+            try:
+                test = re.sub (r"^\\(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
+            except:
+                test = ''
+                
             global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + test + ".csv\"\"" + "," + "\"\"" + test + "\"\")\"" + "," +
                                          api_url + "," + api_type + "," + date_time + "," + time_spent + ",")
         else:

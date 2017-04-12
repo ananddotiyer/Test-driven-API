@@ -29,6 +29,7 @@ tests_token = [
     "api_expected":{
       "row_json_path": "",
       "rowcount":1,
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {
@@ -38,7 +39,7 @@ tests_token = [
         "$[0].['access_token']": "token"
       },
     },
-    "output_mode": 'n',
+    "output_mode": 'w',
   },
   #1-1. 303=Now, Status: Done
   {
@@ -54,6 +55,7 @@ tests_token = [
     "api_expected":{
       "row_json_path": "",
       "rowcount":1,
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {

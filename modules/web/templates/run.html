@@ -12,6 +12,7 @@
             <th>Executed at</th>
             <th>Time spent</th>
             <th>Result</th>
+            <th>Schema</th>
         </tr>
         {% for result in results %}
             {{ macros.result_row(result["test_path"],
@@ -19,7 +20,9 @@
                                 result["api_type"],
                                 result["executed_at"],
                                 result["time_spent (sec)"],
-                                result["result"]) }}
+                                result["result"],
+                                result["debuglog"],
+                                result["schema"]) }}
         {% endfor %}
     </table>
 {% endblock %}

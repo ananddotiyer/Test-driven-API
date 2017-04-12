@@ -22,12 +22,14 @@
     </p>
 {% endmacro %}
 
-{% macro result_row(test_path, api_url, api_type, executed_at, time_spent, result) %}
+{% macro result_row(test_path, api_url, api_type, executed_at, time_spent, result, debuglog, schema) %}
     <tr>
-        {{ display_link (api_url, api_type == "GET") }}
+        {# {{ display_link (api_url, api_type == "GET") }} #}
+        <td><a href='{{ test_path }}'>{{ api_url }}</a></td>
         <td>{{ api_type }}</td>
         <td>{{ executed_at }}</td>
         <td>{{ time_spent }}</td>
-        <td><a href='{{ test_path }}'>{{ result }}</a></td>
+        <td><a href='{{ debuglog }}'>{{ result }}</a></td>
+        <td><a href='{{ schema }}'>Comparison Report</a></td>
     </tr>
 {% endmacro %}
