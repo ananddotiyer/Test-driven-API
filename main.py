@@ -25,7 +25,7 @@ from modules.libraries.verification import *
 from modules.libraries.api_object import *
 from modules.tests.tests_suite import *
 
-def main_driver (run_from_web):
+def main_config (run_from_web):
 	if run_from_web: #if found running from the web
 		global_dict["debuglog"] = "..\\tests\\debuglog\\"
 		global_dict["reslog"] = "..\\tests\\"
@@ -36,7 +36,10 @@ def main_driver (run_from_web):
 		global_dict["reslog"] = "modules\\tests\\"
 		global_dict["schema_folder"] = "modules\\tests\\schema\\"
 		global_dict["test_folder"] = "modules\\tests\\"
+
+	return global_dict
 	
+def main_driver ():
 	report_start ()
 	
 	for tests in tests_suite:
@@ -174,4 +177,5 @@ def main_driver (run_from_web):
 	global_dict["schema"].close()
 #main program
 if __name__ == '__main__':
-	main_driver (False)
+	main_config (False)
+	main_driver ()
