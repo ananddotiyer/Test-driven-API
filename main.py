@@ -172,9 +172,12 @@ def main_driver ():
 			report_it (bool (result),
 					   api_expected=api_expected)
 				
-	global_dict["debuglog"].close()
-	global_dict["reslog"].close()
-	global_dict["schema"].close()
+	try:
+		global_dict["debuglog"].close()
+		global_dict["reslog"].close()
+		global_dict["schema"].close()
+	except:
+		pass
 #main program
 if __name__ == '__main__':
 	main_config (False)
