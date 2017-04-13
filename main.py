@@ -32,7 +32,7 @@ def main_config (run_from_web):
 		global_dict["schema_folder"] = "..\\tests\\schema\\"
 		global_dict["test_folder"] = "..\\tests\\"
 	else:
-		global_dict["debuglog"] = "modules\\tests\\debuglogs\\"
+		global_dict["debuglog"] = "modules\\tests\\debuglog\\"
 		global_dict["reslog"] = "modules\\tests\\"
 		global_dict["schema_folder"] = "modules\\tests\\schema\\"
 		global_dict["test_folder"] = "modules\\tests\\"

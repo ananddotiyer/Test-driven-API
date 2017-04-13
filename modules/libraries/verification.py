@@ -166,7 +166,8 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
                 if exp[:5] == "call_":
                     function = getattr (sys.modules[__name__], exp[5:])
                     for json_path in expected[exp].keys():
-                        result = result and function (json_path, actual, expected[exp][json_path])
+                        result_function = function (json_path, actual, expected[exp][json_path])
+                        result = result and result_function
             except:
                 pass
     except:

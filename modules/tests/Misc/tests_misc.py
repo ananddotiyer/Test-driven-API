@@ -64,6 +64,7 @@ tests_misc = [
       "row_json_path": "$.['items'][*]", #all items dicts
       "rowcount":30,
       "call_compare_equals": {
+        "$.['items'][0].['title']": ["Home - Moolya Software Testing"]
       },
       "call_compare_types": {
       },
