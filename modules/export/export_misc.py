@@ -141,7 +141,7 @@ def WriteRowDetails (f, row):
 	for column in row.values ():
 		row_string += "%s\t" %(unicode (column))
 
-	row_string = row_string.strip (',')
+	row_string = row_string.replace ('\n', '').strip (',')
 	f.write (row_string + "\n")
 	
 def WriteHeader (f, headers, output_mode):

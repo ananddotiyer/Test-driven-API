@@ -14,29 +14,59 @@ __status__ = "Production"
 #############################################################################################################################################
 
 tests_misc = [
-  ################################################Appkey-Home-slug########################################################
+  ################################################Stack-overflow########################################################
+  # #1-1. 303=Now, Status: Done
+  # {
+  #   "api_name": "1-misc",
+  #   "api_type": "GET",
+  #   "api_base_url": "search/advanced",
+  #   "api_function": "api_export",
+  #   "api_params": {
+  #     "order": "desc",
+  #     "sort": "votes",
+  #     "site": "stackoverflow",
+  #     "tagged": "python",
+  #     "accepted": "True",
+  #     "title": "how"
+  #   },
+  #   "api_expected":{
+  #     "row_json_path": "$.['items'][*]", #all items dicts
+  #     "rowcount":30,
+  #     "call_compare_equals": {
+  #       "$.['items'][0].['tags'][*]": ["python","python-3.x","dictionary","mapping","idioms"],
+  #     },
+  #     "call_compare_types": {
+  #     },
+  #     "specific":False,
+  #   },
+  #   "api_repl": {
+  #   },    
+  #   "api_store": {
+  #     "response": {
+  #     },
+  #   },
+  #   "output_mode": 'w',
+  # },
+  ################################################Google search########################################################
   #1-1. 303=Now, Status: Done
   {
-    "api_name": "1-misc",
+    "api_name": "google-search",
     "api_type": "GET",
-    "api_base_url": "search/advanced",
+    "api_base_url": "customsearch/v1",
     "api_function": "api_export",
     "api_params": {
-      "order": "desc",
-      "sort": "votes",
-      "site": "stackoverflow",
-      "tagged": "python",
-      "accepted": "True",
-      "title": "how"
+      "key": "AIzaSyD7x0G_bXAwpd6eXg5NYJn91BLnpkXQ3oE",
+      "cx": "002677408965362061794:0wbgub677qo",
+      "q": "Moolya Testing",
     },
     "api_expected":{
       "row_json_path": "$.['items'][*]", #all items dicts
       "rowcount":30,
       "call_compare_equals": {
-        "$.['items'][0].['tags'][*]": ["python","python-3.x","dictionary","mapping","idioms"],
       },
       "call_compare_types": {
       },
+      "response_schema": "match",
       "specific":False,
     },
     "api_repl": {
@@ -47,4 +77,5 @@ tests_misc = [
     },
     "output_mode": 'w',
   },
+
 ]

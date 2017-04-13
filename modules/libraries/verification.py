@@ -142,13 +142,16 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
             result = True
             print "Schema match successful"
 
+        #Test run on the same web session writes to the same schema comparison report.
+        global_dict["schema"] = open (global_dict["actuals_folder"] + global_dict["schema_filename"], "a")
+        global_dict["schema"].write (full_match_output + "\n")
+        global_dict["schema"].close ()
+        
         #last schema (irrespective of pass or fail) is always accessible from the Schema tab in the main navigation  bar.
-        with open (global_dict["actuals_folder"] + global_dict["schema_filename"], "a") as writer:
-            writer.write (full_match_output + "\n")
-
-        with open (global_dict["actuals_folder"] + "schema.txt", "a") as writer:
-            writer.write (full_match_output + "\n")
-            
+        global_dict["schema"] = open (global_dict["actuals_folder"] + "schema.txt", "w")
+        global_dict["schema"].write (full_match_output + "\n")
+        global_dict["schema"].close()
+        
     actual = json.loads (actual)
 
     old_actual = actual #store, in order to restore later
@@ -196,7 +199,7 @@ def report_start ():
     global_dict["reslog"]  = open(global_dict["reslog"] + "passfaillog.csv",'a')
     #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result,schema\n")
 
-def report_it (result, test="", api_url="", api_type=""):
+def report_it (result, test="", api_url="", api_type="",api_expected=""):
     #print (result)
     if isinstance (result, bool):
         if (result):
@@ -205,7 +208,14 @@ def report_it (result, test="", api_url="", api_type=""):
             global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"PASS\"\")\",")
         else:
             global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"FAIL\"\")\",")
-        global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['schema_filename'] + "\"\"" + "," + "\"\"schema\"\")\"\n")
+        
+        try:
+            if api_expected["response_schema"] == "match":
+                global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['schema_filename'] + "\"\"" + "," + "\"\"schema\"\")\"")
+        except:
+            pass
+        
+        global_dict["reslog"].write ("\n")
     else:
         result = str (result)
         global_dict["stop_time"] = datetime.datetime.now()

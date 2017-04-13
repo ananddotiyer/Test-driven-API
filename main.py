@@ -67,7 +67,7 @@ def main_driver (run_from_web):
 					
 					if isinstance (current_api[each_key], dict):
 						for each_subkey in current_api[each_key].keys():
-							if isinstance (current_api[each_key][each_subkey], int):
+							if not isinstance (current_api[each_key][each_subkey], str):
 								continue
 							
 							#Replace anything between <> from global_dict                       
@@ -149,7 +149,9 @@ def main_driver (run_from_web):
 				current_api.actuals_folder = actuals_folder
 				
 				report_it ("datetime",
-					   subfolder + tests + "\\" + api_name, api_url, api_type)
+					   test=subfolder + tests + "\\" + api_name,
+					   api_url=api_url,
+					   api_type=api_type)
 	
 				#Parse the response, and verify the results
 				if not (api_type == "DELETE"):
@@ -162,11 +164,12 @@ def main_driver (run_from_web):
 			except Exception: #so, you can continue with the next test
 				traceback.print_exc (file=global_dict["debuglog"])
 	
-			report_it (bool (result))
+			report_it (bool (result),
+					   api_expected=api_expected)
 				
 	global_dict["debuglog"].close()
 	global_dict["reslog"].close()
-	
+	global_dict["schema"].close()
 #main program
 if __name__ == '__main__':
 	main_driver (False)
