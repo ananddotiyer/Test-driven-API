@@ -64,13 +64,14 @@ def api_export (current_api):
 				write_data_dict.append (data_dict)
 			
 			rowCount = len (write_data_dict)
-			result = result and WriteRow (f, write_data_dict, current_api)
+			WriteRow (f, write_data_dict, current_api)
 
 			result = result and VerifyExpected (data_org, expected, json_file=filename + ".json")
 	else:
 		result = result and VerifyExpected (data_org, expected)
 
-	result = result and VerifyRowCount (rowCount, expected["rowcount"])
+	result_rowCount = VerifyRowCount (rowCount, expected["rowcount"])
+	result = result and result_rowCount
 			
 	try:
 		f.close()

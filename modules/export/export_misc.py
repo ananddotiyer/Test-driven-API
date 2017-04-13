@@ -112,10 +112,8 @@ def WriteRow (f, data_dict, current_api):
 		api_params = current_api.api_params
 		output_mode = current_api.output_mode
 
-		result = True
-		
 		if not VerifyFilter (data_dict, expected):
-			return True
+			return
 
 		try:
 			global_store (api_store, api_params, data_dict)
@@ -123,19 +121,17 @@ def WriteRow (f, data_dict, current_api):
 			pass
 
 		if (output_mode == 'n'):
-			return True		
+			return
 
 		WriteHeader (f, data_dict[0].keys(), output_mode)
 		
 		for row in data_dict:
 			WriteRowDetails (f, row)
 			
-		return result
 	except Exception, e:
 		report_it ("Row " + str (rowCount) + ":" + str(e) + " field is missing in the server response (JSON)\n")
 		f.write ("\n")
-		return False
-
+		
 def WriteRowDetails (f, row):
 	row_string = ""
 	for column in row.values ():
