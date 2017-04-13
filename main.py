@@ -27,13 +27,15 @@ from modules.tests.tests_suite import *
 
 def main_driver (run_from_web):
 	if run_from_web: #if found running from the web
-		global_dict["debuglog"] = "..\\tests\\"
+		global_dict["debuglog"] = "..\\tests\\debuglog\\"
 		global_dict["reslog"] = "..\\tests\\"
-		global_dict["actuals_folder"] = "..\\tests\\"
+		global_dict["schema_folder"] = "..\\tests\\schema\\"
+		global_dict["test_folder"] = "..\\tests\\"
 	else:
-		global_dict["debuglog"] = "modules\\tests\\"
+		global_dict["debuglog"] = "modules\\tests\\debuglogs\\"
 		global_dict["reslog"] = "modules\\tests\\"
-		global_dict["actuals_folder"] = "modules\\tests\\"
+		global_dict["schema_folder"] = "modules\\tests\\schema\\"
+		global_dict["test_folder"] = "modules\\tests\\"
 	
 	report_start ()
 	
@@ -145,7 +147,7 @@ def main_driver (run_from_web):
 				current_api.data = response.text
 				current_api.status_code = response.status_code
 		
-				actuals_folder = global_dict["actuals_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
+				actuals_folder = global_dict["test_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
 				current_api.actuals_folder = actuals_folder
 				
 				report_it ("datetime",

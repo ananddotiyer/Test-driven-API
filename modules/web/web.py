@@ -57,6 +57,8 @@ def run ():
         global_dict["running"] = False
 
         tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
+        debuglog_folder = tests_folder + "/debuglog"
+        schema_folder = tests_folder + "/schema"
 
         results_list = []
         for line in reader:
@@ -70,13 +72,15 @@ def run ():
             #making the path for the specific debuglog
             split_result = line["result"].replace ('=HYPERLINK', "").split (',')
             line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
-            line["debuglog"] = "file://%s/%s" %(tests_folder,line["debuglog"])
+            print debuglog_folder
+            line["debuglog"] = "file://%s/%s" %(debuglog_folder,line["debuglog"])
             line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
 
             #making the path for the schema compare file
             print line["schema"]
             line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["schema"] = "file://%s/%s" %(tests_folder,line["schema"])
+            print schema_folder
+            line["schema"] = "file://%s/%s" %(schema_folder,line["schema"])
             print line["schema"]
              
         return render_template ('run.html', results=results_list)

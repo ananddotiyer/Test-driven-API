@@ -37,6 +37,7 @@ tests_misc = [
   #     },
   #     "call_compare_types": {
   #     },
+  #     "response_schema": "write",
   #     "specific":False,
   #   },
   #   "api_repl": {

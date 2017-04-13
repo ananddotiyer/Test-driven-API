@@ -143,12 +143,12 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
             print "Schema match successful"
 
         #Test run on the same web session writes to the same schema comparison report.
-        global_dict["schema"] = open (global_dict["actuals_folder"] + global_dict["schema_filename"], "a")
+        global_dict["schema"] = open (global_dict["schema_folder"] + global_dict["schema_filename"], "a")
         global_dict["schema"].write (full_match_output + "\n")
         global_dict["schema"].close ()
         
         #last schema (irrespective of pass or fail) is always accessible from the Schema tab in the main navigation  bar.
-        global_dict["schema"] = open (global_dict["actuals_folder"] + "schema.txt", "w")
+        global_dict["schema"] = open (global_dict["test_folder"] + "schema.txt", "w")
         global_dict["schema"].write (full_match_output + "\n")
         global_dict["schema"].close()
         
