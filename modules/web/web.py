@@ -114,11 +114,13 @@ def cleanup ():
     
     schema_folder = global_dict["schema_folder"]
     for file in os.listdir(schema_folder):
-        os.remove (schema_folder + "\\" + file)
+        if not file == "__init__.py":
+            os.remove (schema_folder + "\\" + file)
 
     debuglog_folder = global_dict["debuglog"]
     for file in os.listdir(debuglog_folder):
-        os.remove (debuglog_folder + "\\" + file)
+        if not file == "__init__.py":
+            os.remove (debuglog_folder + "\\" + file)
 
     shutil.copy (global_dict["test_folder"] + "passfaillog_blank.csv", global_dict["test_folder"] + "passfaillog.csv")
 
