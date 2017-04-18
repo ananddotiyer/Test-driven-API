@@ -19,7 +19,7 @@ tests_comment = [
   {
     "api_name": "1-comment",
     "api_type": "POST",
-    "api_base_url": "apis/common/v3/comment/get",
+    "api_url": "http://dev.media.jio.com/n18/apis/common/v3/comment/get",
     "api_function": "api_export",
     "api_params": {
       "article_id":"0023ec30dcbe11e6ab94b53e412a6ed9",

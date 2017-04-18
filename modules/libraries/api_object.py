@@ -22,7 +22,8 @@ class api_object(dict):
 	def __init__(self, test):
 		self.api_name = test["api_name"]
 		self.api_type = test["api_type"]
-		self.api_url = global_dict["server"] + test["api_base_url"]
+		#self.api_url = global_dict["server"] + test["api_base_url"]
+		self.api_url = test["api_url"]
 		self.api_function = test["api_function"]
 		self.api_params = test["api_params"]
 		

@@ -19,7 +19,7 @@ tests_pancake = [
   {
     "api_name": "1-pancake",
     "api_type": "GET",
-    "api_base_url": "apis/common/v3/pancake/get/{key}/0/2",
+    "api_url": "http://dev.media.jio.com/n18/apis/common/v3/pancake/get/{key}/0/2",
     "api_function": "api_export",
     "api_params": {
     },

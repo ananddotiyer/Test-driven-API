@@ -35,7 +35,7 @@ tests_suite = [
 f_out = open ("API_list.csv", 'w')
 
 pattern1 = re.compile ("api_type\": \"(.*)\"")
-pattern2 = re.compile ("api_base_url\": \"(.*)\"")
+pattern2 = re.compile ("api_url\": \"(.*)\"")
 #pattern3 = re.compile ("Status: (.*)")
 pattern3 = re.compile ("#+((.*)-\d\.(.*))")
 

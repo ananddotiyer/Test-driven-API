@@ -19,7 +19,7 @@ tests_token = [
   {
     "api_name": "1-refreshtoken",
     "api_type": "POST",
-    "api_base_url": "oauth/token",
+    "api_url": "http://api-beta.wally.me/oauth/token",
     "api_function": "api_export",
     "api_params": {
       "client_id": "cMQgd64KSJrkKM0zDCIFzL8PeYJoUzU1",
@@ -45,7 +45,7 @@ tests_token = [
   {
     "api_name": "1-currentuser",
     "api_type": "GET",
-    "api_base_url": "users/current",
+    "api_url": "http://api-beta.wally.me/users/current",
     "api_function": "api_export",
     "api_params": {
     },

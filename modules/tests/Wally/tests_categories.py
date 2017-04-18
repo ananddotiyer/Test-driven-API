@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #############################################################################################################################################
-"""tests_appkey_home.py: Appkey Home tests for Network18"""
+"""tests_categories.py: Category tests for Wally"""
 
 __author__ = "Anand Iyer"
 __copyright__ = "Copyright 2016-17, Anand Iyer"
@@ -13,45 +13,58 @@ __email__ = "ananddotiyer@gmail.com"
 __status__ = "Production"
 #############################################################################################################################################
 
-tests_apphomekey = [
+tests_categories = [
   ################################################Appkey-Home-slug########################################################
   #1-1. 303=Now, Status: Done
   {
-    "api_name": "1-appkeyhomeslug",
+    "api_name": "1-refreshtoken",
     "api_type": "POST",
-    "api_url": "http://dev.media.jio.com/n18/apis/{key}/v3/homeslug/get/1/1/303",
+    "api_url": "http://api-beta.wally.me/oauth/token",
     "api_function": "api_export",
     "api_params": {
-      "id_slug": "1",
-      "subId_slug": "303",
-      "pageNo": 1,
-      "app_lang": "2",
-      "cat": "",
-      "lang": "15"
+      "client_id": "cMQgd64KSJrkKM0zDCIFzL8PeYJoUzU1",
+      "grant_type": "refresh_token",
+      "refresh_token": "YPzcEI9fmAb5tZycyFNr4xwdTYXtvuqL"
     },
     "api_expected":{
-      "row_json_path": "$.['item'][*]", #all item dicts
-      #"row_json_path": "$.['item'][*].['anchors'][*]",#all anchor dicts for all item dicts
-      "rowcount":34,
-      "call_compare_equals": {
-        "$.code": [200],
-        "$.['item'][0].['primary_category'][0].['slug']": ["politics"]
-      },
-      "call_compare_types": {
-        "$.code": int,
-        "$.['item'][0].['primary_category'][0].['slug']": unicode
-      },
+      "row_json_path": "",
+      "rowcount":1,
       "response_schema": "match",
       "specific":False,
     },
     "api_repl": {
-    "key": "bjzlhr11aevxwik0pf0x"
     },    
     "api_store": {
       "response": {
-        "$.['item'][0].['primary_category'][0].['slug']": "slug"
+        "$[0].['access_token']": "token"
       },
     },
     "output_mode": 'w',
   },
+  #1-1. 303=Now, Status: Done
+  {
+    "api_name": "new_categories",
+    "api_type": "GET",
+    "api_url": "http://api-beta.wally.me/categoriesnew",
+    "api_function": "api_export",
+    "api_params": {
+    },
+    "api_headers": {
+      "Authorization": "Bearer <token>"
+    },
+    "api_expected":{
+      "row_json_path": "$.[*]",
+      "rowcount":605,
+      "response_schema": "match",
+      "specific":False,
+    },
+    "api_repl": {
+    },    
+    "api_store": {
+      "response": {
+      },
+    },
+    "output_mode": 'w',
+  },
+
 ]

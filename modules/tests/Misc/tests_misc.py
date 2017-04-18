@@ -19,7 +19,7 @@ tests_misc = [
   # {
   #   "api_name": "stackoverflow-search",
   #   "api_type": "GET",
-  #   "api_base_url": "search/advanced",
+  #   "api_url": "https://api.stackexchange.com/2.2/search/advanced",
   #   "api_function": "api_export",
   #   "api_params": {
   #     "order": "desc",
@@ -53,7 +53,7 @@ tests_misc = [
   {
     "api_name": "google-search",
     "api_type": "GET",
-    "api_base_url": "customsearch/v1",
+    "api_url": "https://www.googleapis.com/customsearch/v1",
     "api_function": "api_export",
     "api_params": {
       "key": "AIzaSyD7x0G_bXAwpd6eXg5NYJn91BLnpkXQ3oE",
