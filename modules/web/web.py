@@ -13,7 +13,7 @@ __status__ = "Production"
 
 from importlib import import_module
 
-from flask import Flask, render_template
+from flask import Flask, request, send_from_directory, render_template
 from flask_bootstrap import Bootstrap
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -65,17 +65,21 @@ def results ():
             
             #making the path for the exported csv file
             line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["test_path"] = "file://%s/%s" %(tests_folder,line["test_path"])
+            
+            folder_parts = line["test_path"].split ('\\')
+            folder = tests_folder + '\\' + '\\'.join (folder_parts[:-1]) #tests folder
+            filename = folder_parts[-1] #only the filename
+            line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
             #making the path for the specific debuglog
             split_result = line["result"].replace ('=HYPERLINK', "").split (',')
             line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
-            line["debuglog"] = "file://%s/%s" %(debuglog_folder,line["debuglog"])
+            line["debuglog"] = "debuglog?debuglog=%s" %(line["debuglog"])
             line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
 
             #making the path for the schema compare file
             line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["schema"] = "file://%s/%s" %(schema_folder,line["schema"])
+            line["schema"] = "schema?schema=%s" %(line["schema"])
              
         return render_template ('results.html', results=results_list)
     except:
@@ -106,17 +110,21 @@ def run ():
             
             #making the path for the exported csv file
             line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["test_path"] = "file://%s/%s" %(tests_folder,line["test_path"])
+
+            folder_parts = line["test_path"].split ('\\')
+            folder = tests_folder + '\\' + '\\'.join (folder_parts[:-1]) #tests folder
+            filename = folder_parts[-1] #only the filename
+            line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
             #making the path for the specific debuglog
             split_result = line["result"].replace ('=HYPERLINK', "").split (',')
             line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
-            line["debuglog"] = "file://%s/%s" %(debuglog_folder,line["debuglog"])
+            line["debuglog"] = "debuglog?debuglog=%s" %(line["debuglog"])
             line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
 
             #making the path for the schema compare file
             line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["schema"] = "file://%s/%s" %(schema_folder,line["schema"])
+            line["schema"] = "schema?schema=%s" %(line["schema"])
              
         return render_template ('run.html', results=results_list)
     except:
@@ -129,7 +137,12 @@ def schema ():
 
     global_dict = main_config (True)
 
-    reader = open('..\\tests\\schema.txt')
+    filename = request.args.get ('schema')
+    if not filename:
+        reader = open('..\\tests\\schema.txt')
+    else:
+        reader = open(global_dict["schema_folder"] + "/" + filename)
+    
     for line in reader:
         tabs_num = (len(line) - len(line.lstrip(' '))) / 4 #number of tabs
         tabs.append (tabs_num)
@@ -161,7 +174,33 @@ def cleanup ():
     shutil.copy (global_dict["test_folder"] + "passfaillog_blank.csv", global_dict["test_folder"] + "passfaillog.csv")
 
     return render_template ('cleanup.html')
+
+@app.route ("/debuglog")
+def debuglog ():
+    lines = []
+
+    global_dict = main_config (True)
+
+    filename = request.args.get ('debuglog')
+    reader = open(global_dict["debuglog"] + "/" + filename)
+    for line in reader:
+        lines.append(line.strip ())
+    reader.close()
+
+    try:
+        return render_template ('debuglog.html', lines=lines)
+    except:
+        return render_template ('no_results.html', running=global_dict["running"])
+
+@app.route ("/download")
+def download ():
+    global_dict = main_config (True)
+
+    folder = request.args.get ('folder')
+    filename = request.args.get ('filename')
     
+    return send_from_directory(folder, filename, as_attachment=True)
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html')
