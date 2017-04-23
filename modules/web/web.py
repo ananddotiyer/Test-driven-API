@@ -13,9 +13,16 @@ __status__ = "Production"
 
 from importlib import import_module
 
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, request, send_from_directory, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, FileField
+from wtforms.validators import Required, Length
+from werkzeug.utils import secure_filename
+import traceback
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'top secret!'
 bootstrap = Bootstrap(app)
 
 if __name__ == '__main__' and __package__ is None:
@@ -83,6 +90,7 @@ def results ():
              
         return render_template ('results.html', results=results_list)
     except:
+        traceback.print_exc ()
         return render_template ('no_results.html', running=global_dict["running"])
 
 @app.route ("/run")
@@ -95,8 +103,8 @@ def run ():
     try:
         if not global_dict["running"]:
             global_dict["running"] = True #so that you don't run it again!
-            main_driver ()
-        
+            main_driver (True)
+
         reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
         global_dict["running"] = False
 
@@ -128,6 +136,7 @@ def run ():
              
         return render_template ('run.html', results=results_list)
     except:
+        traceback.print_exc ()
         return render_template ('no_results.html', running=global_dict["running"])
 
 @app.route ("/schema")
@@ -192,6 +201,187 @@ def debuglog ():
     except:
         return render_template ('no_results.html', running=global_dict["running"])
 
+class CreateNewTest (FlaskForm):
+    name = StringField('Name: ', validators=[Required(), Length(1, 16)])
+    method = StringField('Type: ')
+    url = StringField('URL: ', validators=[Required(), Length(1, 1000)], render_kw={"style":"width: 1000px;"})
+    parameters = StringField('Parameters: ', render_kw={"style":"width: 1000px;"})
+    expected = StringField('Expected: ', validators=[Required()], render_kw={"style":"width: 1000px;"})
+    repl = StringField('Replace string: ')
+    store = StringField('Store: ')
+    function = StringField('Function: ', validators=[Required()])
+    output = StringField('Output mode: ', validators=[Required(), Length(1, 3)])
+    #upload = FileField ()
+    
+    submit = SubmitField('Submit')
+
+class UploadTest (FlaskForm):
+    upload = FileField ()
+
+    submit = SubmitField('Submit')
+
+@app.route ("/test_upload", methods=('GET', 'POST'))
+def test_upload ():
+    global_dict = main_config (True)
+
+    try:
+        form = UploadTest()
+
+        if form.validate_on_submit():
+            #Upload the exported file
+            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            f.save(tests_folder + "\\" + filename)
+
+            return redirect(url_for('test_uploaded'))
+
+        return render_template ('test_upload.html', form=form)
+    except:
+        traceback.print_exc ()
+        return render_template ('no_test.html')
+
+@app.route ("/test_created_upload", methods=('GET', 'POST'))
+def test_created_upload ():
+    global_dict = main_config (True)
+
+    try:
+        form = UploadTest()
+
+        if request.method == 'GET':
+            form.upload.data = '"tests_user_defined.py"'
+
+        if form.validate_on_submit():
+            #Upload the exported file
+            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            f.save(tests_folder + "\\" + filename)
+
+            return redirect(url_for('test_uploaded'))
+
+        return render_template ('test_upload.html', form=form)
+    except:
+        traceback.print_exc ()
+        return render_template ('no_results.html', running=global_dict["running"])
+
+@app.route ("/duplicate", methods=('GET', 'POST'))
+def duplicate ():
+    lines = []
+
+    global_dict = main_config (True)
+    tests = global_dict["tests"]
+
+    api_category = request.args.get ('cat')
+    api_name = request.args.get ('name')
+    
+    for each_test in tests:
+        test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
+        cat = each_test[1]
+        if cat == api_category and test["api_name"] == api_name:
+            break
+    try:
+        form = CreateNewTest()
+        
+        #Pre-populate data
+        if request.method == 'GET':
+            form.name.data = '"%s"' %(test["api_name"])
+            form.method.data = '"%s"' %(test["api_type"])
+            form.url.data = '"%s"' %(test["api_url"])
+            form.parameters.data = test["api_params"]
+            form.expected.data = test["api_expected"]
+            form.repl.data = test["api_repl"]
+            form.store.data = test["api_store"]
+            form.function.data = '"%s"' %(test["api_function"])
+            form.output.data = '"%s"' %(test["output_mode"])
+        
+        new_test = {}
+        if form.validate_on_submit():
+            new_test["api_name"] = form.name.data
+            new_test["api_type"] = form.method.data
+            new_test["api_url"] = form.url.data
+            new_test["api_params"] = form.parameters.data
+            new_test["api_expected"] = form.expected.data
+            new_test["api_repl"] = form.repl.data
+            new_test["api_store"] = form.store.data
+            new_test["api_function"] = form.function.data
+            new_test["output_mode"] = form.output.data
+
+            #mod = import_module ("modules.web.tests_user_defined")
+            mod = import_module ("modules.tests.Misc.tests_user_defined")
+            tests = getattr (mod, "tests_user_defined")
+            #tests.append (new_test)
+            
+            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
+            with open (tests_folder + "tests_user_defined.py", "w") as fp:
+                fp.write ("tests_user_defined = [\n")
+                #existing tests
+                for test in tests:
+                    fp.write ("{\n")
+                    for each in test:
+                        if type (test[each] ) == str:
+                            fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
+                        else:
+                            fp.write ('\t"%s" : %s,\n' %(each, test[each]))
+                            
+                    fp.write ("},\n")
+                
+                #new test
+                fp.write ("{\n")
+                for each in new_test:
+                    fp.write ('\t"%s" : %s,\n' %(each, new_test[each]))
+                fp.write ("}\n")
+                fp.write ("]")
+
+            #return redirect(url_for('test_created_upload')) #this form creates test (tests_user_defined.py) locally.  Also allows to select file and upload it to tests folder in server.
+            return redirect(url_for('test_created')) #creates test (tests_user_defined.py) in tests folder in server.
+        return render_template ('duplicate.html', form=form)
+    except:
+        traceback.print_exc ()
+        return render_template ('no_results.html', running=global_dict["running"])
+
+@app.route ("/delete", methods=('GET','POST'))
+def delete ():
+    lines = []
+
+    global_dict = main_config (True)
+    tests = global_dict["tests"]
+
+    api_category = request.args.get ('cat')
+    api_name = request.args.get ('name')
+    
+    for each_test in tests:
+        test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
+        cat = each_test[1]
+        if cat == api_category and test["api_name"] == api_name:
+            break
+    try:
+        print request.method
+        mod = import_module ("modules.tests.Misc.tests_user_defined")
+        tests = getattr (mod, "tests_user_defined")
+        tests.remove (test)
+        
+        print tests
+        tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
+        with open (tests_folder + "tests_user_defined.py", "w") as fp:
+            fp.write ("tests_user_defined = [\n")
+            #existing tests
+            for test in tests:
+                fp.write ("{\n")
+                for each in test:
+                    if type (test[each] ) == str:
+                        fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
+                    else:
+                        fp.write ('\t"%s" : %s,\n' %(each, test[each]))
+                        
+                fp.write ("},\n")
+            fp.write ("]")
+                
+        return render_template ('test_deleted.html') #deletes test (tests_user_defined.py) from  tests folder in server.
+    except:
+        traceback.print_exc ()
+        return render_template ('no_test.html')
+
 @app.route ("/download")
 def download ():
     global_dict = main_config (True)
@@ -200,6 +390,18 @@ def download ():
     filename = request.args.get ('filename')
     
     return send_from_directory(folder, filename, as_attachment=True)
+
+@app.route ("/test_uploaded")
+def test_uploaded ():
+    global_dict = main_config (True)
+
+    return render_template ('test_uploaded.html')
+
+@app.route ("/test_created")
+def test_created ():
+    global_dict = main_config (True)
+
+    return render_template ('test_created.html')
 
 @app.errorhandler(404)
 def not_found(e):

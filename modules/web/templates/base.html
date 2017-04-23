@@ -4,9 +4,10 @@
     <nav class="navbar navbar-inverse" role="navigation">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">Tests</a>
-            <a class="navbar-brand" href="{{ url_for('results') }}">Results</a>
+            <a class="navbar-brand" href="{{ url_for('test_upload') }}">Upload</a>
             <a class="navbar-brand" href="{{ url_for('run') }}">Run</a>
-            <a class="navbar-brand" href="{{ url_for('schema') }}">Schema (last)</a>
+            <a class="navbar-brand" href="{{ url_for('results') }}">Results</a>
+            <a class="navbar-brand" href="{{ url_for('schema') }}">Schema</a>
             <a class="navbar-brand" href="{{ url_for('cleanup') }}">Cleanup</a>
         </div>    
     </nav>

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Test Created{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <h3>Test Added</h3>
+        <div class="row">
+            <div class="col-md-3">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

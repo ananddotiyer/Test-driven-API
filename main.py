@@ -37,140 +37,150 @@ def main_config (run_from_web):
 		global_dict["schema_folder"] = "modules\\tests\\schema\\"
 		global_dict["test_folder"] = "modules\\tests\\"
 
-	return global_dict
+	global_dict["tests"] = [] #contains the same set of tests globally, so that it can be accesssed by web pages.
 	
-def main_driver ():
-	report_start ()
-	
-	for tests in tests_suite:
+	for test_category in tests_suite:
 		subfolder = ""
-		tests_in_folder = tests.split ('.')
+		tests_in_folder = test_category.split ('.')
 	
 		#import only the required list of tests; contained in test_list
-		mod = import_module ("modules.tests." + tests)
+		mod = import_module ("modules.tests." + test_category)
 		if len(tests_in_folder) > 1:
 			for folder in tests_in_folder[:-1]:
 				subfolder += "\\" + folder
-			tests = tests_in_folder[-1]
+			test_category = tests_in_folder[-1]
 			subfolder += "\\"
 		
-		test_list = getattr (mod, tests)
+		test_list = getattr (mod, test_category)
 		
 		for test in test_list:
-			current_api = api_object(test)
-			
-			#Execute only the api_types in run_list (tests_suite.py)
-			if not current_api.api_type in run_list:
-				continue
-			
-			#substitute for api_store
-			try:
-				api_store = current_api.api_store
-				for each_key in current_api.keys():
-					if each_key == "api_store":
-						continue
-					
-					if isinstance (current_api[each_key], dict):
-						for each_subkey in current_api[each_key].keys():
-							if not isinstance (current_api[each_key][each_subkey], str):
-								continue
-							
-							#Replace anything between <> from global_dict                       
-							matches = re.findall ("<(.*?)>", current_api[each_key][each_subkey], re.DOTALL)
-							for match in matches:
-								current_api[each_key][each_subkey] = re.sub('<' + match + '>',global_dict[match], current_api[each_key][each_subkey])
-					else:
-						#Replace anything between <> from global_dict                       
-						matches = re.findall("<(.*?)>", current_api[each_key], re.DOTALL)
-						for match in matches:
-							current_api[each_key] = re.sub('<' + match + '>',global_dict[match], current_api[each_key])
-			except:
-				traceback.print_exc (file=global_dict["debuglog"]) #api_store may not be present
-	
-			#Store object attributes temporarily, before using them
-			api_url = current_api.api_url
-			api_type = current_api.api_type
-			api_name = current_api.api_name
-			api_function = current_api.api_function
-			api_params = current_api.api_params
-			api_headers = current_api.api_headers
-			api_expected = current_api.api_expected
-			output_mode = current_api.output_mode
-			
-			#substituting for the api_repl
-			try:
-				url_placeholders = current_api.api_repl
-				for each in url_placeholders:
-					matchIt = re.compile ("{" + each + "}")
-					if url_placeholders[each] == "global_dict":
-						repl = global_dict[each]
-					else:
-						repl = url_placeholders[each]
-					api_url = matchIt.sub(repl, api_url)
-					
-				current_api.api_url = api_url #replace in the api_object
-			except:
-				pass #api_repl may not be present
-			
-			#construct URL
-			if api_type == "GET" or api_type == "DELETE":
-				api_params_set = "?"
-				for param in api_params.keys():
-					api_params_set = api_params_set + param + "=" + api_params[param] + "&"
-				
-				api_url = (api_url + api_params_set)[:-1]
-	
-			#define headers for the api
-			headers = {}
-			headers.update (api_headers)
-			
-			#get the function pointer
-			mod = import_module ("modules.libraries.api_functions")
-			function_to_call = getattr (mod, api_function)
-	
-			try:
-				result = False
-				#get the server response
-				if api_type == "GET":
-					response = requests.get (api_url, headers=headers)
-				
-				if api_type == "DELETE":
-					api_name = api_name + "_delete" #distinguish the .csv filename for DELETE calls
-					response = requests.delete (api_url)
-				
-				if api_type == "PUT":
-					api_name = api_name + "_put" #distinguish the .csv filename for PUT calls
-					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
-					response = requests.put (api_url, data = json.dumps (api_params), headers=headers)
-				
-				if api_type == "POST":
-					global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
-					response = requests.post (api_url, data = json.dumps (api_params), headers=headers)
-
-				current_api.data = response.text
-				current_api.status_code = response.status_code
+			global_dict["tests"].append ((test, test_category, subfolder))
 		
-				actuals_folder = global_dict["test_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
-				current_api.actuals_folder = actuals_folder
+	return global_dict
+		
+def main_driver (run_from_web):
+	if not run_from_web:
+		main_config (False)
+
+	report_start ()
+	
+	for test in global_dict["tests"]:
+		current_api = api_object(test[0]) #test[0] indicates the actual test
+		test_category = test[1] #test category
+		subfolder = test[2] #subfolder
+		
+		#Execute only the api_types in run_list (tests_suite.py)
+		if not current_api.api_type in run_list:
+			continue
+		
+		#substitute for api_store
+		try:
+			api_store = current_api.api_store
+			for each_key in current_api.keys():
+				if each_key == "api_store":
+					continue
 				
-				report_it ("datetime",
-					   test=subfolder + tests + "\\" + api_name,
-					   api_url=api_url,
-					   api_type=api_type)
-	
-				#Parse the response, and verify the results
-				if not (api_type == "DELETE"):
-					if function_to_call is not None:
-						result = function_to_call (current_api)
-					else:
-						result = True
+				if isinstance (current_api[each_key], dict):
+					for each_subkey in current_api[each_key].keys():
+						if not isinstance (current_api[each_key][each_subkey], str):
+							continue
+						
+						#Replace anything between <> from global_dict                       
+						matches = re.findall ("<(.*?)>", current_api[each_key][each_subkey], re.DOTALL)
+						for match in matches:
+							current_api[each_key][each_subkey] = re.sub('<' + match + '>',global_dict[match], current_api[each_key][each_subkey])
 				else:
-					result = True #assume that it passed
-			except Exception: #so, you can continue with the next test
-				traceback.print_exc (file=global_dict["debuglog"])
+					#Replace anything between <> from global_dict                       
+					matches = re.findall("<(.*?)>", current_api[each_key], re.DOTALL)
+					for match in matches:
+						current_api[each_key] = re.sub('<' + match + '>',global_dict[match], current_api[each_key])
+		except:
+			traceback.print_exc (file=global_dict["debuglog"]) #api_store may not be present
+
+		#Store object attributes temporarily, before using them
+		api_url = current_api.api_url
+		api_type = current_api.api_type
+		api_name = current_api.api_name
+		api_function = current_api.api_function
+		api_params = current_api.api_params
+		api_headers = current_api.api_headers
+		api_expected = current_api.api_expected
+		output_mode = current_api.output_mode
+		
+		#substituting for the api_repl
+		try:
+			url_placeholders = current_api.api_repl
+			for each in url_placeholders:
+				matchIt = re.compile ("{" + each + "}")
+				if url_placeholders[each] == "global_dict":
+					repl = global_dict[each]
+				else:
+					repl = url_placeholders[each]
+				api_url = matchIt.sub(repl, api_url)
+				
+			current_api.api_url = api_url #replace in the api_object
+		except:
+			pass #api_repl may not be present
+		
+		#construct URL
+		if api_type == "GET" or api_type == "DELETE":
+			api_params_set = "?"
+			for param in api_params.keys():
+				api_params_set = api_params_set + param + "=" + api_params[param] + "&"
+			
+			api_url = (api_url + api_params_set)[:-1]
+
+		#define headers for the api
+		headers = {}
+		headers.update (api_headers)
+		
+		#get the function pointer
+		mod = import_module ("modules.libraries.api_functions")
+		function_to_call = getattr (mod, api_function)
+
+		try:
+			result = False
+			#get the server response
+			if api_type == "GET":
+				response = requests.get (api_url, headers=headers)
+			
+			if api_type == "DELETE":
+				api_name = api_name + "_delete" #distinguish the .csv filename for DELETE calls
+				response = requests.delete (api_url)
+			
+			if api_type == "PUT":
+				api_name = api_name + "_put" #distinguish the .csv filename for PUT calls
+				global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+				response = requests.put (api_url, data = json.dumps (api_params), headers=headers)
+			
+			if api_type == "POST":
+				global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+				response = requests.post (api_url, data = json.dumps (api_params), headers=headers)
+
+			current_api.data = response.text
+			current_api.status_code = response.status_code
 	
-			report_it (bool (result),
-					   api_expected=api_expected)
+			actuals_folder = global_dict["test_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
+			current_api.actuals_folder = actuals_folder
+			
+			report_it ("datetime",
+				   test=subfolder + test_category + "\\" + api_name,
+				   api_url=api_url,
+				   api_type=api_type)
+
+			#Parse the response, and verify the results
+			if not (api_type == "DELETE"):
+				if function_to_call is not None:
+					result = function_to_call (current_api)
+				else:
+					result = True
+			else:
+				result = True #assume that it passed
+		except Exception: #so, you can continue with the next test
+			traceback.print_exc (file=global_dict["debuglog"])
+
+		report_it (bool (result),
+				   api_expected=api_expected)
 				
 	try:
 		global_dict["debuglog"].close()
@@ -181,4 +191,4 @@ def main_driver ():
 #main program
 if __name__ == '__main__':
 	main_config (False)
-	main_driver ()
+	main_driver (False)

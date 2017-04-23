@@ -79,5 +79,4 @@ tests_misc = [
     },
     "output_mode": 'w',
   },
-
 ]
