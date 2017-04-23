@@ -6,9 +6,9 @@
     </td>
 {% endmacro %}
 
-{% macro test_row(api_category, api_name, api_type, api_url) %}
+{% macro test_row(api_category, api_download, api_name, api_type, api_url) %}
     <tr>
-        <td>{{ api_category }}</td>
+        <td><a href='{{ api_download }}'>{{ api_category }}</a></td>
         <td>{{ api_name }}</td>
         <td>{{ api_type }}</td>
         <td>{{ api_url }}</td>

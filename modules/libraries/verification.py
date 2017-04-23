@@ -47,7 +47,7 @@ def compare_contains (json_path, actual, expected):
 def compare_types (json_path, actual, expected):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
-    if not (type (actual[0]) == expected): #same type
+    if not (str (type (actual[0])) == "<type '%s'>" %(expected)): #same type
         error_message = "Expected %s in %s, but found %s" %(expected, json_path, type (actual[0]))
         print error_message
         global_dict["debuglog"].write (error_message + "\n")

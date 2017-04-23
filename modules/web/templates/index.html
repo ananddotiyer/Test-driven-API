@@ -13,6 +13,7 @@
         </tr>
         {% for test in tests %}
             {{ macros.test_row(test["api_category"],
+                                    test["api_download"],
                                     test["api_name"],
                                     test["api_type"],
                                     test["api_url"]) }}

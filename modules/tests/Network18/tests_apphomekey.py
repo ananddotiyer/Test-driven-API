@@ -38,8 +38,8 @@ tests_apphomekey = [
         "$.['item'][0].['primary_category'][0].['slug']": ["politics"]
       },
       "call_compare_types": {
-        "$.code": int,
-        "$.['item'][0].['primary_category'][0].['slug']": unicode
+        "$.code": "int",
+        "$.['item'][0].['primary_category'][0].['slug']": "unicode"
       },
       "response_schema": "match",
       "specific":False,

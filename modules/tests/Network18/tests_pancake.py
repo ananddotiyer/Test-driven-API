@@ -31,7 +31,7 @@ tests_pancake = [
         "$.code": [200],
       },
       "call_compare_types": {
-        "$.code": int,
+        "$.code": "int",
       },
       "response_schema": "match",
       "specific":False,

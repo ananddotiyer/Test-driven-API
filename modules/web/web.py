@@ -39,6 +39,8 @@ def index():
 
     global_dict = main_config (True)
 
+    tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
+
     for tests in tests_suite:
         tests_in_folder = tests.split ('.')
     
@@ -48,7 +50,11 @@ def index():
         additional_tests = getattr (mod, tests_in_folder[-1])
         test_list.extend (additional_tests)
         for test in additional_tests:
-            test["api_category"] = tests_in_folder[-1]
+            test["api_category"] = '\\'.join (tests_in_folder[-2:])
+            folder_parts = (tests_folder + "/" + test["api_category"]).split ('\\')
+            folder = '\\'.join (folder_parts[:-1]) #tests folder
+            filename = folder_parts[-1] + ".py" #only the filename.
+            test["api_download"] = "download?folder=%s&filename=%s" %(folder, filename) #download tests
 
     return render_template('index.html', tests=test_list)
 
@@ -202,7 +208,7 @@ def debuglog ():
         return render_template ('no_results.html', running=global_dict["running"])
 
 class CreateNewTest (FlaskForm):
-    name = StringField('Name: ', validators=[Required(), Length(1, 16)])
+    name = StringField('Name: ', validators=[Required(), Length(1, 30)])
     method = StringField('Type: ')
     url = StringField('URL: ', validators=[Required(), Length(1, 1000)], render_kw={"style":"width: 1000px;"})
     parameters = StringField('Parameters: ', render_kw={"style":"width: 1000px;"})
@@ -276,7 +282,7 @@ def duplicate ():
     api_name = request.args.get ('name')
     
     for each_test in tests:
-        test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
+        test = each_test[0]
         cat = each_test[1]
         if cat == api_category and test["api_name"] == api_name:
             break
@@ -307,10 +313,8 @@ def duplicate ():
             new_test["api_function"] = form.function.data
             new_test["output_mode"] = form.output.data
 
-            #mod = import_module ("modules.web.tests_user_defined")
             mod = import_module ("modules.tests.Misc.tests_user_defined")
             tests = getattr (mod, "tests_user_defined")
-            #tests.append (new_test)
             
             tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
             with open (tests_folder + "tests_user_defined.py", "w") as fp:
@@ -319,7 +323,7 @@ def duplicate ():
                 for test in tests:
                     fp.write ("{\n")
                     for each in test:
-                        if type (test[each] ) == str:
+                        if not type (test[each] ) == dict or type (test[each] ) == list:
                             fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
                         else:
                             fp.write ('\t"%s" : %s,\n' %(each, test[each]))

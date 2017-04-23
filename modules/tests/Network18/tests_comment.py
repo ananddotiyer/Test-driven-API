@@ -34,8 +34,8 @@ tests_comment = [
         "$.['data'][0].['user_name']": ["Anand Iyer"],
       },
       "call_compare_types": {
-        "$.code": int,
-        "$.['data'][0].['user_name']": unicode,
+        "$.code": "int",
+        "$.['data'][0].['user_name']": "unicode",
       },
       "response_schema": "match",
       "specific":False,
