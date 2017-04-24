@@ -17,6 +17,7 @@ import json
 import datetime
 import re
 import sys
+import os
 import traceback
 import json_schema
 from modules.tests.tests_suite import *
@@ -27,7 +28,6 @@ def compare_equals (json_path, actual, expected):
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) == set (expected)): #contains or equal
         error_message = "Expected %s in %s, but found %s" %(str (expected), json_path, str (actual))
-        print error_message
         global_dict["debuglog"].write (error_message + "\n")
         return False
     else:
@@ -38,7 +38,6 @@ def compare_contains (json_path, actual, expected):
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) <= set (expected)): #contains or equal
         error_message = "Expected %s in %s, but found %s" %(str (expected), json_path, str (actual))
-        print error_message
         global_dict["debuglog"].write (error_message + "\n")
         return False
     else:
@@ -49,7 +48,6 @@ def compare_types (json_path, actual, expected):
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (str (type (actual[0])) == "<type '%s'>" %(expected)): #same type
         error_message = "Expected %s in %s, but found %s" %(expected, json_path, type (actual[0]))
-        print error_message
         global_dict["debuglog"].write (error_message + "\n")
         return False
     else:
@@ -113,7 +111,6 @@ def VerifyFilter (actual, expected):
 
 def VerifyRowCount (actual_rowCount, exp_rowCount):
     if not (exp_rowCount == actual_rowCount):
-        print (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!")
         global_dict["debuglog"].write (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!\n")
         return False
     else:
@@ -130,28 +127,30 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
         response_schema = "none"
         
     if response_schema == "match":
-        schema = create_schema (json_file)
-
-        schema_object = json_schema.loads(schema)
-        full_match_output = full_match_schema (actual, schema_object)
-
-        if "fail" in full_match_output:
-            result = False
-            print "Schema match unsuccessful.  Check schema_file for details."
+        if os.path.isfile(json_file):
+            schema = create_schema (json_file)
+    
+            schema_object = json_schema.loads(schema)
+            full_match_output = full_match_schema (actual, schema_object)
+    
+            if "fail" in full_match_output:
+                result = False
+                global_dict["debuglog"].write ("Schema match unsuccessful.  Check schema_file for details.")
+            else:
+                result = True
+                global_dict["debuglog"].write ("Schema match successful")
+    
+            #Test run on the same web session writes to the same schema comparison report.
+            global_dict["schema"] = open (global_dict["schema_folder"] + global_dict["schema_filename"], "a")
+            global_dict["schema"].write (full_match_output + "\n")
+            global_dict["schema"].close ()
+            
+            #last schema (irrespective of pass or fail) is always accessible from the Schema tab in the main navigation  bar.
+            global_dict["schema"] = open (global_dict["test_folder"] + "schema.txt", "w")
+            global_dict["schema"].write (full_match_output + "\n")
+            global_dict["schema"].close()
         else:
-            result = True
-            print "Schema match successful"
-
-        #Test run on the same web session writes to the same schema comparison report.
-        global_dict["schema"] = open (global_dict["schema_folder"] + global_dict["schema_filename"], "a")
-        global_dict["schema"].write (full_match_output + "\n")
-        global_dict["schema"].close ()
-        
-        #last schema (irrespective of pass or fail) is always accessible from the Schema tab in the main navigation  bar.
-        global_dict["schema"] = open (global_dict["test_folder"] + "schema.txt", "w")
-        global_dict["schema"].write (full_match_output + "\n")
-        global_dict["schema"].close()
-        
+            global_dict["debuglog"].write ("Schema file doesn't exist.  Write expected schema before attempting to match! \n")
     actual = json.loads (actual)
 
     old_actual = actual #store, in order to restore later
@@ -201,7 +200,6 @@ def report_start ():
     #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result,schema\n")
 
 def report_it (result, test="", api_url="", api_type="",api_expected=""):
-    #print (result)
     if isinstance (result, bool):
         if (result):
             print ("All is well!!")

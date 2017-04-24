@@ -49,12 +49,11 @@ def main_config (run_from_web):
 			for folder in tests_in_folder[:-1]:
 				subfolder += "\\" + folder
 			test_category = tests_in_folder[-1]
-			subfolder += "\\"
 		
 		test_list = getattr (mod, test_category)
 		
 		for test in test_list:
-			global_dict["tests"].append ((test, test_category, subfolder))
+			global_dict["tests"].append ((test, test_category, subfolder.strip ('\\')))
 		
 	return global_dict
 		
@@ -160,11 +159,11 @@ def main_driver (run_from_web):
 			current_api.data = response.text
 			current_api.status_code = response.status_code
 	
-			actuals_folder = global_dict["test_folder"] + subfolder + "actuals\\" + api_name #re-using for writing the reports.
+			actuals_folder = "%s%s\\%s\\%s" %(global_dict["test_folder"], subfolder, "actuals", api_name) #re-using for writing the reports.
 			current_api.actuals_folder = actuals_folder
 			
 			report_it ("datetime",
-				   test=subfolder + test_category + "\\" + api_name,
+				   test="%s\\%s\\%s" %(subfolder, test_category, api_name),
 				   api_url=api_url,
 				   api_type=api_type)
 

@@ -50,8 +50,8 @@ def index():
         additional_tests = getattr (mod, tests_in_folder[-1])
         test_list.extend (additional_tests)
         for test in additional_tests:
-            test["api_category"] = '\\'.join (tests_in_folder[-2:])
-            folder_parts = (tests_folder + "/" + test["api_category"]).split ('\\')
+            test["api_category"] = '.'.join (tests_in_folder[-2:])
+            folder_parts = (tests_folder + "\\" + test["api_category"]).replace ('.','\\').split ('\\')
             folder = '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] + ".py" #only the filename.
             test["api_download"] = "download?folder=%s&filename=%s" %(folder, filename) #download tests
@@ -284,7 +284,8 @@ def duplicate ():
     for each_test in tests:
         test = each_test[0]
         cat = each_test[1]
-        if cat == api_category and test["api_name"] == api_name:
+        subfolder = each_test[2]
+        if "%s.%s" %(subfolder, cat) == api_category and test["api_name"] == api_name:
             break
     try:
         form = CreateNewTest()
@@ -357,15 +358,14 @@ def delete ():
     for each_test in tests:
         test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
         cat = each_test[1]
-        if cat == api_category and test["api_name"] == api_name:
+        subfolder = each_test[2]
+        if "%s.%s" %(subfolder, cat) == api_category and test["api_name"] == api_name:
             break
     try:
-        print request.method
         mod = import_module ("modules.tests.Misc.tests_user_defined")
         tests = getattr (mod, "tests_user_defined")
         tests.remove (test)
         
-        print tests
         tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
         with open (tests_folder + "tests_user_defined.py", "w") as fp:
             fp.write ("tests_user_defined = [\n")
@@ -393,7 +393,10 @@ def download ():
     folder = request.args.get ('folder')
     filename = request.args.get ('filename')
     
-    return send_from_directory(folder, filename, as_attachment=True)
+    if "tests" in folder: #allow only tests to be downloaded
+        return send_from_directory(folder, filename, as_attachment=True)
+    else:
+        return render_template ('no_test.html')
 
 @app.route ("/test_uploaded")
 def test_uploaded ():
