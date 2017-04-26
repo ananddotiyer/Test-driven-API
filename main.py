@@ -176,7 +176,7 @@ def main_driver (run_from_web):
 			current_api.actuals_folder = actuals_folder
 			
 			report_it ("datetime",
-				   test="%s\\%s\\%s" %(subfolder, test_category, api_name),
+				   test="%s\\%s" %(test_category.replace ('.', '\\'), api_name),
 				   api_url=api_url,
 				   api_type=api_type)
 

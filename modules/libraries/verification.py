@@ -232,9 +232,10 @@ def report_it (result, test="", api_url="", api_type="",api_expected=""):
             print ("**************************************************************************************")
             
             #Hyper-link the test to the appropriate output .csv.  For the right hyperlinking technique, refer to http://stackoverflow.com/questions/6563091/can-excel-interpret-the-urls-in-my-csv-as-hyperlinks
-            #test_title = test
             try:
-                test = re.sub (r"^\\(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
+                print "Before " + test
+                test = re.sub (r"^(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
+                print "After " + test
             except:
                 test = ''
                 
