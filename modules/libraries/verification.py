@@ -142,6 +142,7 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
     
             #Test run on the same web session writes to the same schema comparison report.
             global_dict["schema"] = open (global_dict["schema_folder"] + global_dict["schema_filename"], "a")
+            global_dict["schema"].write ("\n*************************************%s************************************\n" %(json_file))
             global_dict["schema"].write (full_match_output + "\n")
             global_dict["schema"].close ()
             

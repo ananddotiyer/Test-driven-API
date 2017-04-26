@@ -8,6 +8,7 @@
 
 {% macro test_row(api_category, api_download, api_name, api_type, api_url) %}
     <tr>
+        <td><input type="checkbox" name="select" value="{{api_category}},{{ api_name }}"></td>
         <td><a href='{{ api_download }}'>{{ api_category }}</a></td>
         <td>{{ api_name }}</td>
         <td>{{ api_type }}</td>
@@ -37,9 +38,6 @@
         <td>{{ time_spent }}</td>
         <td><a href='{{ debuglog }}'>{{ result }}</a></td>
         
-        {# Write "Comparison Report only if "schema" argument points to a text file #}
-        {% if schema.endswith (".txt") %}
-            <td><a href='{{ schema }}'>Comparison Report</a></td>
-        {% endif %}
+        <td><a href='{{ schema }}'>Comparison Report</a></td>
     </tr>
 {% endmacro %}

@@ -24,20 +24,15 @@ from importlib import import_module
 from modules.libraries.verification import *
 from modules.libraries.api_object import *
 from modules.tests.tests_suite import *
+from os import path
 
 def main_config (run_from_web):
-	if run_from_web: #if found running from the web
-		global_dict["debuglog"] = "..\\tests\\debuglog\\"
-		global_dict["reslog"] = "..\\tests\\"
-		global_dict["schema_folder"] = "..\\tests\\schema\\"
-		global_dict["test_folder"] = "..\\tests\\"
-	else:
-		global_dict["debuglog"] = "modules\\tests\\debuglog\\"
-		global_dict["reslog"] = "modules\\tests\\"
-		global_dict["schema_folder"] = "modules\\tests\\schema\\"
-		global_dict["test_folder"] = "modules\\tests\\"
-
 	global_dict["tests"] = [] #contains the same set of tests globally, so that it can be accesssed by web pages.
+
+	tests_folder = path.dirname(path.abspath(__file__)) + "/modules/tests"
+
+	print path.abspath(__file__)
+	print path.dirname(path.abspath(__file__))
 	
 	for test_category in tests_suite:
 		subfolder = ""
@@ -48,13 +43,31 @@ def main_config (run_from_web):
 		if len(tests_in_folder) > 1:
 			for folder in tests_in_folder[:-1]:
 				subfolder += "\\" + folder
-			test_category = tests_in_folder[-1]
+		test_list = getattr (mod, tests_in_folder[-1]) #tests_in_folder[-1] is tests_user_defined
+		test_category = folder + "." + tests_in_folder[-1] #Misc.tests_user_defined
 		
-		test_list = getattr (mod, test_category)
 		
 		for test in test_list:
+			test["api_category"] = test_category 
+			folder_parts = (tests_folder + "\\" + test["api_category"]).replace ('.','\\').split ('\\')
+			folder = '\\'.join (folder_parts[:-1]) #tests folder
+			filename = folder_parts[-1] + ".py" #only the filename.
+			test["api_download"] = "download?folder=%s&filename=%s" %(folder, filename) #download tests
 			global_dict["tests"].append ((test, test_category, subfolder.strip ('\\')))
-		
+	
+	if run_from_web: #if found running from the web
+		global_dict["debuglog"] = "..\\tests\\debuglog\\"
+		global_dict["reslog"] = "..\\tests\\"
+		global_dict["schema_folder"] = "..\\tests\\schema\\"
+		global_dict["test_folder"] = "..\\tests\\"
+		global_dict["run_selected"] = []
+	else:
+		global_dict["debuglog"] = "modules\\tests\\debuglog\\"
+		global_dict["reslog"] = "modules\\tests\\"
+		global_dict["schema_folder"] = "modules\\tests\\schema\\"
+		global_dict["test_folder"] = "modules\\tests\\"
+		global_dict["run_selected"] = global_dict["tests"]
+
 	return global_dict
 		
 def main_driver (run_from_web):
@@ -63,7 +76,7 @@ def main_driver (run_from_web):
 
 	report_start ()
 	
-	for test in global_dict["tests"]:
+	for test in global_dict["run_selected"]:
 		current_api = api_object(test[0]) #test[0] indicates the actual test
 		test_category = test[1] #test category
 		subfolder = test[2] #subfolder

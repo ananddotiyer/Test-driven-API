@@ -33,29 +33,39 @@ if __name__ == '__main__' and __package__ is None:
 from main import main_config, main_driver
 from tests.tests_suite import *
     
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 def index():
     test_list = []
 
     global_dict = main_config (True)
 
-    tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
+    for test in global_dict["tests"]:
+        test_list.append (test[0]) #global_dict["tests"] is a tuple consisting of tests, test_category and subfolder
 
-    for tests in tests_suite:
-        tests_in_folder = tests.split ('.')
-    
-        #import only the required list of tests; contained in test_list
-        mod = import_module ("tests." + tests)
+    if request.method == "POST":
+        run_selected = []
+        check_list = request.form.getlist("select")
         
-        additional_tests = getattr (mod, tests_in_folder[-1])
-        test_list.extend (additional_tests)
-        for test in additional_tests:
-            test["api_category"] = '.'.join (tests_in_folder[-2:])
-            folder_parts = (tests_folder + "\\" + test["api_category"]).replace ('.','\\').split ('\\')
-            folder = '\\'.join (folder_parts[:-1]) #tests folder
-            filename = folder_parts[-1] + ".py" #only the filename.
-            test["api_download"] = "download?folder=%s&filename=%s" %(folder, filename) #download tests
+        for each_test in global_dict["tests"]:
+            test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
+            cat = each_test[1]
+            subfolder = each_test[2]
+            
+            for check in check_list:
+                check = check.split (',')
+                if cat == check[0] and test["api_name"] == check[1]:
+                    run_selected.append (each_test)
+                    break
 
+        global_dict["run_selected"] = run_selected
+        
+        if not global_dict["running"]:
+            global_dict["running"] = True #so that you don't run it again!
+            main_driver (True)
+        
+        global_dict["running"] = False #so that you can run it again!
+        return redirect(url_for('results'))
+    
     return render_template('index.html', tests=test_list)
 
 @app.route ("/results")
@@ -92,8 +102,11 @@ def results ():
 
             #making the path for the schema compare file
             line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+            schema_file = path.dirname(path.dirname(path.abspath(__file__))) + "\\tests\\schema\\" + line["schema"]
+            if not os.path.isfile(schema_file):
+                line["schema"] = "none"
             line["schema"] = "schema?schema=%s" %(line["schema"])
-             
+
         return render_template ('results.html', results=results_list)
     except:
         traceback.print_exc ()
@@ -107,9 +120,9 @@ def run ():
     global_dict = main_config (True)
     
     try:
-        if not global_dict["running"]:
-            global_dict["running"] = True #so that you don't run it again!
-            main_driver (True)
+        # if not global_dict["running"]:
+        #     global_dict["running"] = True #so that you don't run it again!
+        #     main_driver (True)
 
         reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
         global_dict["running"] = False
@@ -153,21 +166,21 @@ def schema ():
     global_dict = main_config (True)
 
     filename = request.args.get ('schema')
-    if not filename:
-        reader = open('..\\tests\\schema.txt')
-    else:
-        reader = open(global_dict["schema_folder"] + "/" + filename)
-    
-    for line in reader:
-        tabs_num = (len(line) - len(line.lstrip(' '))) / 4 #number of tabs
-        tabs.append (tabs_num)
-        lines.append(line.strip ())
-    reader.close()
-
     try:
+        if not filename:
+            reader = open('..\\tests\\schema.txt')
+        else:
+            reader = open(global_dict["schema_folder"] + "/" + filename)
+        
+        for line in reader:
+            tabs_num = (len(line) - len(line.lstrip(' '))) / 4 #number of tabs
+            tabs.append (tabs_num)
+            lines.append(line.strip ())
+        reader.close()
+    
         return render_template ('schema.html', indices=range (len (tabs)), tabs=tabs, schema=lines)
     except:
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_schema.html')
 
 @app.route ("/cleanup")
 def cleanup ():
@@ -285,7 +298,8 @@ def duplicate ():
         test = each_test[0]
         cat = each_test[1]
         subfolder = each_test[2]
-        if "%s.%s" %(subfolder, cat) == api_category and test["api_name"] == api_name:
+        
+        if cat == api_category and test["api_name"] == api_name:
             break
     try:
         form = CreateNewTest()
@@ -359,7 +373,8 @@ def delete ():
         test = each_test[0] #each_test is a tuple of test, test_category, subfolder.
         cat = each_test[1]
         subfolder = each_test[2]
-        if "%s.%s" %(subfolder, cat) == api_category and test["api_name"] == api_name:
+
+        if cat == api_category and test["api_name"] == api_name:
             break
     try:
         mod = import_module ("modules.tests.Misc.tests_user_defined")
