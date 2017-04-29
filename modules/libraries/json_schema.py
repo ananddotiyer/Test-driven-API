@@ -78,7 +78,6 @@ def dumps(j, *args, **kwargs):
                 retorno.append(montador(i))
             # Check if it's a flexible size list
             if retorno:
-                # print merge_schema_tree(retorno[1], retorno[0])
                 if all([_match_tree(r, retorno[0]) for r in retorno]):
                     final = retorno[0]
                     for r in retorno:

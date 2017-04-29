@@ -45,6 +45,11 @@ class api_object(dict):
 			self.api_expected["should_fail"] = False #default
 
 		try:
+			self.api_expected["specific"] = bool (self.api_expected["specific"])
+		except:
+			self.api_expected["specific"] = False #default
+
+		try:
 			self.output_mode = test["output_mode"]
 		except:
 			self.output_mode = 'w'	#default

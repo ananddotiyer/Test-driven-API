@@ -23,7 +23,7 @@ import codecs
 
 ################################################generic api function#################################################
 def api_export (current_api):
-	filename = current_api.actuals_folder
+	filename = current_api.actuals_folder + current_api.api_name
 	expected = current_api.api_expected
 	data_org = current_api.data
 	output_mode = current_api.output_mode
@@ -36,7 +36,10 @@ def api_export (current_api):
 	else:
 		f = None
 	
-	data_dict = json.loads (data_org)
+	try:
+		data_dict = json.loads (data_org)
+	except:
+		raise Exception ("Unable to decipher response data!")
 
 	rowCount = 0
 
@@ -45,8 +48,10 @@ def api_export (current_api):
 	if status_code == 200:
 		try:
 			response_schema = expected["response_schema"]
+			schema_file = current_api.actuals_folder + expected["schema_file"] #Expected schema file can be different from actual schema file.
 		except:
 			response_schema = "none"
+			schema_file = filename
 			
 		if response_schema == "write":
 			schema = get_response_schema (data_org, filename + ".json")
@@ -66,50 +71,12 @@ def api_export (current_api):
 			rowCount = len (write_data_dict)
 			WriteRow (f, write_data_dict, current_api)
 
-			result = result and VerifyExpected (data_org, expected, json_file=filename + ".json")
+			result = result and VerifyExpected (data_org, expected, json_file=schema_file + ".json")
 	else:
 		result = result and VerifyExpected (data_org, expected)
 
 	result_rowCount = VerifyRowCount (rowCount, expected["rowcount"])
 	result = result and result_rowCount
-			
-	try:
-		f.close()
-	except:
-		pass
-
-	return result
-
-################################################app_homekey##############################################################
-def apphomekeyslug(current_api):
-	filename = current_api.actuals_folder
-	expected = current_api.api_expected
-	data_org = current_api.data
-	output_mode = current_api.output_mode
-	status_code = current_api.status_code
-
-	if output_mode != 'n':
-		if output_mode == 'h':
-			output_mode = 'a'
-		f = codecs.open(filename + ".csv", output_mode,encoding='utf-16')
-	else:
-		f = None
-	
-	data_dict = json.loads (data_org)
-
-	rowCount = 0
-
-	result = check_status_code (status_code, expected["should_fail"])
-	
-	if status_code == 200:
-		if not expected["specific"]:
-			WriteHomeSlugHeader (f, output_mode)
-			result, rowCount = WriteHomeSlug (f, data_dict, current_api)
-			result = result and VerifyExpected (data_dict, expected)
-	else:
-		result = result and VerifyExpected (data_dict, expected)
-
-	result = result and VerifyRowCount (rowCount, expected["rowcount"])
 			
 	try:
 		f.close()

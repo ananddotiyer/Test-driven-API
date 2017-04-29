@@ -31,9 +31,6 @@ def main_config (run_from_web):
 
 	tests_folder = path.dirname(path.abspath(__file__)) + "/modules/tests"
 
-	print path.abspath(__file__)
-	print path.dirname(path.abspath(__file__))
-	
 	for test_category in tests_suite:
 		subfolder = ""
 		tests_in_folder = test_category.split ('.')
@@ -118,7 +115,7 @@ def main_driver (run_from_web):
 		api_headers = current_api.api_headers
 		api_expected = current_api.api_expected
 		output_mode = current_api.output_mode
-		
+
 		#substituting for the api_repl
 		try:
 			url_placeholders = current_api.api_repl
@@ -172,14 +169,14 @@ def main_driver (run_from_web):
 			current_api.data = response.text
 			current_api.status_code = response.status_code
 	
-			actuals_folder = "%s%s\\%s\\%s" %(global_dict["test_folder"], subfolder, "actuals", api_name) #re-using for writing the reports.
+			actuals_folder = "%s%s\\%s\\" %(global_dict["test_folder"], subfolder, "actuals") #re-using for writing the reports.
 			current_api.actuals_folder = actuals_folder
-			
+
 			report_it ("datetime",
 				   test="%s\\%s" %(test_category.replace ('.', '\\'), api_name),
 				   api_url=api_url,
 				   api_type=api_type)
-
+			
 			#Parse the response, and verify the results
 			if not (api_type == "DELETE"):
 				if function_to_call is not None:

@@ -74,7 +74,6 @@ def global_store (api_store, api_params, data):
 				pass 
 			try:
 				global_dict[var] = store_data
-				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the server response!  None stored.")
 
@@ -97,7 +96,6 @@ def global_store (api_store, api_params, data):
 				pass 
 			try:
 				global_dict[var] = store_data
-				#print (global_dict[var])
 			except:
 				print ("Unable to find " + each + " in the request parameters!  None stored.")
 
@@ -129,8 +127,9 @@ def WriteRow (f, data_dict, current_api):
 			WriteRowDetails (f, row)
 			
 	except Exception, e:
-		report_it ("Row " + str (rowCount) + ":" + str(e) + " field is missing in the server response (JSON)\n")
-		f.write ("\n")
+		pass
+		#report_it ("Row " + str (rowCount) + ":" + str(e) + " field is missing in the server response (JSON)\n")
+		#f.write ("\n")
 		
 def WriteRowDetails (f, row):
 	row_string = ""

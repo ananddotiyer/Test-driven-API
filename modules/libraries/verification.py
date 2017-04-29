@@ -110,7 +110,7 @@ def VerifyFilter (actual, expected):
     return retValue
 
 def VerifyRowCount (actual_rowCount, exp_rowCount):
-    if not (exp_rowCount == actual_rowCount):
+    if not (exp_rowCount == 0 or exp_rowCount == actual_rowCount): #rowcount won't be compared, if 0
         global_dict["debuglog"].write (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!\n")
         return False
     else:
@@ -135,10 +135,10 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
     
             if "fail" in full_match_output:
                 result = False
-                global_dict["debuglog"].write ("Schema match unsuccessful.  Check schema_file for details.")
+                global_dict["debuglog"].write ("Schema match unsuccessful.  Check schema_file for details.\n")
             else:
                 result = True
-                global_dict["debuglog"].write ("Schema match successful")
+                global_dict["debuglog"].write ("Schema match successful\n")
     
             #Test run on the same web session writes to the same schema comparison report.
             global_dict["schema"] = open (global_dict["schema_folder"] + global_dict["schema_filename"], "a")
@@ -225,7 +225,10 @@ def report_it (result, test="", api_url="", api_type="",api_expected=""):
         global_dict["start_time"] = global_dict["stop_time"]
         
         if result == "datetime":
-            global_dict["debuglog"].write ("\n**" + result_string + "**\n") #only if this is the test header
+            global_dict["debuglog"].write ("**************************************************************************************\n")
+            global_dict["debuglog"].write (result_string + "\n")
+            global_dict["debuglog"].write ("*************************************************************************************\n")
+
             print "\n"
             print ("**************************************************************************************")
             print (result_string)
@@ -233,9 +236,7 @@ def report_it (result, test="", api_url="", api_type="",api_expected=""):
             
             #Hyper-link the test to the appropriate output .csv.  For the right hyperlinking technique, refer to http://stackoverflow.com/questions/6563091/can-excel-interpret-the-urls-in-my-csv-as-hyperlinks
             try:
-                print "Before " + test
                 test = re.sub (r"^(.+)\\.*\\(.+)$", r"\1\\actuals\\\2", test) #lazy match ensures that only the test name is replaced.
-                print "After " + test
             except:
                 test = ''
                 

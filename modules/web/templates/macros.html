@@ -13,10 +13,8 @@
         <td>{{ api_name }}</td>
         <td>{{ api_type }}</td>
         <td>{{ api_url }}</td>
-        <td>
-            <button type="button" class="btn btn-primary btn-sm" onclick="window.open('/duplicate?cat={{api_category}}&name={{api_name}}')">Duplicate</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="window.open('/delete?cat={{api_category}}&name={{api_name}}')">Delete</button>
-        </td>
+        <td><button type="button" class="btn btn-primary btn-sm btn-block" onclick="window.open('/duplicate?cat={{api_category}}&name={{api_name}}')">Copy</button></td>
+        <td><button type="button" class="btn btn-danger btn-sm btn-block" onclick="window.open('/delete?cat={{api_category}}&name={{api_name}}')">Delete</button></td>
     </tr>
 {% endmacro %}
 

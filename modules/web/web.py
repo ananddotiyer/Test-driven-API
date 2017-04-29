@@ -20,6 +20,7 @@ from wtforms import StringField, SubmitField, FileField
 from wtforms.validators import Required, Length
 from werkzeug.utils import secure_filename
 import traceback
+from support import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top secret!'
@@ -232,12 +233,13 @@ class CreateNewTest (FlaskForm):
     output = StringField('Output mode: ', validators=[Required(), Length(1, 3)])
     #upload = FileField ()
     
-    submit = SubmitField('Submit')
+    submit = SubmitField('Duplicate')
 
 class UploadTest (FlaskForm):
-    upload = FileField ()
+    import_from_postman = FileField ()
+    upload_tests = FileField ()
 
-    submit = SubmitField('Submit')
+    submit = SubmitField('Upload')
 
 @app.route ("/test_upload", methods=('GET', 'POST'))
 def test_upload ():
@@ -246,19 +248,40 @@ def test_upload ():
     try:
         form = UploadTest()
 
-        if form.validate_on_submit():
-            #Upload the exported file
-            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
-            f = form.upload.data
-            filename = secure_filename(f.filename)
-            f.save(tests_folder + "\\" + filename)
+        import_result = ""
+        upload_result = ""
 
-            return redirect(url_for('test_uploaded'))
+        if form.validate_on_submit():
+            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
+            #Import POSTMAN tests (exported from POSTMAN)   
+            f = form.import_from_postman.data
+            if not f.filename == "":
+                filename = secure_filename(f.filename)
+                f.save(tests_folder + "\\" + filename)
+                import_result = import_from_postman (tests_folder, filename, "tests_user_defined")
+                if import_result:
+                    import_result = "Successfully imported %s into 'Misc' test category" %(filename)
+                else:
+                    import_result = ""
+            
+            #Upload the exported file
+            f = form.upload_tests.data
+            if not f.filename == "":
+                filename = secure_filename(f.filename)
+                upload_result = f.save(tests_folder + "\\" + filename)
+                print upload_result
+                if upload_result:
+                    upload_result = "Successfully uploaded %s to the server" %(filename)
+                else:
+                    upload_result = ""
+            
+            return redirect(url_for('test_uploaded', import_result=import_result, upload_result=upload_result))
 
         return render_template ('test_upload.html', form=form)
     except:
         traceback.print_exc ()
-        return render_template ('no_test.html')
+        #return render_template ('no_test.html')
+        return redirect(url_for('test_uploaded', import_result=import_result, upload=upload_result))
 
 @app.route ("/test_created_upload", methods=('GET', 'POST'))
 def test_created_upload ():
@@ -417,7 +440,7 @@ def download ():
 def test_uploaded ():
     global_dict = main_config (True)
 
-    return render_template ('test_uploaded.html')
+    return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"))
 
 @app.route ("/test_created")
 def test_created ():

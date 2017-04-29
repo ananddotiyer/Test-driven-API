@@ -6,10 +6,12 @@
 
 {% block page_content %}
     <div class="container">
-        <h3>Test Added</h3>
         <div class="row">
-            <div class="col-md-3">
-                {{ wtf.quick_form(form) }}
+            <div>
+                {{ wtf.quick_form(form, button_map={'submit':'warning'}, form_type='basic') }}
+                </br>
+                <h4> IMPORTANT: </h4>
+                <h5>Importing POSTMAN collection will delete existing user defined tests.  Please back them up manually!</h5>
             </div>
         </div>
     </div>
