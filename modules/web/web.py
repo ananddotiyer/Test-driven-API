@@ -233,19 +233,22 @@ def cleanup ():
 
     global_dict = main_config (True, escape(session['username']))
     
-    schema_folder = global_dict["schema_folder"]
-    for file in os.listdir(schema_folder):
-        if not file == "__init__.py":
-            os.remove (schema_folder + "\\" + file)
-
-    debuglog_folder = global_dict["debuglog"]
-    for file in os.listdir(debuglog_folder):
-        if not file == "__init__.py":
-            os.remove (debuglog_folder + "\\" + file)
-
-    shutil.copy (global_dict["test_folder"] + "passfaillog_blank.csv", global_dict["test_folder"] + "passfaillog.csv")
-
-    return render_template ('cleanup.html')
+    try:
+        schema_folder = global_dict["schema_folder"]
+        for file in os.listdir(schema_folder):
+            if not file == "__init__.py":
+                os.remove (schema_folder + "\\" + file)
+    
+        debuglog_folder = global_dict["debuglog"]
+        for file in os.listdir(debuglog_folder):
+            if not file == "__init__.py":
+                os.remove (debuglog_folder + "\\" + file)
+    
+        shutil.copy (global_dict["test_folder"] + "passfaillog_blank.csv", global_dict["test_folder"] + "passfaillog.csv")
+    
+        return render_template ('cleanup.html')
+    except:
+        return render_template ('no_ops.html')
 
 @app.route ("/debuglog")
 def debuglog ():
