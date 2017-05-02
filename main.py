@@ -41,17 +41,22 @@ def main_config (run_from_web, username=""):
 			tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
 			tests_modules_name = "modules.%s." %(tests_folder_name)
 
+	test_list = []
 	for test_category in tests_suite:
 		subfolder = ""
 		tests_in_folder = test_category.split ('.')
 	
 		#import only the required list of tests; contained in test_list
-		mod = import_module (tests_modules_name + test_category)
-		if len(tests_in_folder) > 1:
-			for folder in tests_in_folder[:-1]:
-				subfolder += "\\" + folder
-		test_list = getattr (mod, tests_in_folder[-1]) #tests_in_folder[-1] is tests_user_defined
-		test_category = folder + "." + tests_in_folder[-1] #Misc.tests_user_defined
+		try:
+			mod = import_module (tests_modules_name + test_category)
+		
+			if len(tests_in_folder) > 1:
+				for folder in tests_in_folder[:-1]:
+					subfolder += "\\" + folder
+			test_list = getattr (mod, tests_in_folder[-1]) #tests_in_folder[-1] is tests_user_defined
+			test_category = folder + "." + tests_in_folder[-1] #Misc.tests_user_defined
+		except:
+			pass
 		
 		
 		for test in test_list:

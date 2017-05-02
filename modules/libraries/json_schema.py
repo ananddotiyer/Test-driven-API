@@ -3,7 +3,7 @@
 
 import json
 
-from validators import (StringValidator, IntValidator, FloatValidator,
+from validators import (StringValidator, LongValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
                         AnyValidator, NullValidator, PythonValidator,
                         DatetimeValidator, EmptyValidator)
@@ -88,8 +88,10 @@ def dumps(j, *args, **kwargs):
             return "str"
         elif isinstance(valor, bool):
             return "bool"
-        elif isinstance(valor, int) or isinstance(valor, long):
+        elif isinstance(valor, int):
             return "int"
+        elif isinstance(valor, long):
+            return "long"
         elif isinstance(valor, float):
             return "float"
         elif valor is None:
@@ -126,7 +128,7 @@ class JsonSchema(object):
     @property
     def validators(self):
         """List of validators available."""
-        v = (StringValidator, IntValidator, FloatValidator, UrlValidator,
+        v = (StringValidator, LongValidator, IntValidator, FloatValidator, UrlValidator,
              BooleanValidator, RegexValidator, AnyValidator, NullValidator,
              DatetimeValidator, EmptyValidator)
         if self.allow_unsafe:

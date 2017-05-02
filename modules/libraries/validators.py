@@ -75,6 +75,40 @@ class IntValidator:
                 return True
         return False
 
+class LongValidator:
+
+    """
+    Class only for grouping the validator methods.
+
+    Validation:
+        Check if the item is an Long and if the value is between min and max
+
+    Possible formats:
+        "long"
+        "long:min:max
+
+    Ex:
+        "long:-10:10"
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Check if given schema must be validated by this Validator."""
+        return schema.startswith("long")
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        """Validator of fact of long."""
+        if not isinstance(item, long):
+            return False
+        if item_schema == "long":
+            return True
+        m = re.match("int\:(\-?[0-9]+)\:(\-?[0-9]+)", item_schema)
+        if m:
+            inferior, superior = m.groups()
+            if item >= long(inferior) and item <= long(superior):
+                return True
+        return False
 
 class FloatValidator:
 

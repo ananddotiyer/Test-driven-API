@@ -50,6 +50,11 @@ class api_object(dict):
 			self.api_expected["specific"] = False #default
 
 		try:
+			self.api_expected["schema_file"] = self.api_expected["schema_file"]
+		except:
+			self.api_expected["schema_file"] = test["api_name"] #default
+
+		try:
 			self.output_mode = test["output_mode"]
 		except:
 			self.output_mode = 'w'	#default

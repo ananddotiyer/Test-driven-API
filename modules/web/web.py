@@ -135,7 +135,7 @@ def results ():
 
             #making the path for the schema compare file
             line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            schema_file = path.dirname(path.dirname(path.abspath(__file__))) + "\\tests\\schema\\" + line["schema"]
+            schema_file = global_dict["schema_folder"] + line["schema"]
             if not os.path.isfile(schema_file):
                 line["schema"] = "none"
             line["schema"] = "schema?schema=%s" %(line["schema"])
@@ -318,8 +318,12 @@ def test_upload ():
             f = form.upload_tests.data
             if not f.filename == "":
                 filename = secure_filename(f.filename)
-                upload_result = f.save(tests_folder + "\\" + filename)
-                print upload_result
+                try:
+                    f.save(tests_folder + "\\" + filename)
+                    upload_result = True
+                except:
+                    upload_result = False
+
                 if upload_result:
                     upload_result = "Successfully uploaded %s to the server" %(filename)
                 else:
