@@ -34,10 +34,6 @@ if __name__ == '__main__' and __package__ is None:
 from main import main_config, main_driver
 from tests.tests_suite import *
 
-# @app.route('/', methods=('GET', 'POST'))
-# def index():
-#     return render_template('index.html')
-
 @app.route('/')
 def index():
     info = logged_in_user (session)
@@ -45,15 +41,20 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm()
+
     if request.method == 'POST':
-        session['username'] = request.form['username']
+        session['username'] = form.username.data
         return redirect(url_for('tests'))
-    return '''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
+
+    return render_template ('login.html', form=form)
+
+    # return '''
+    #     <form action="" method="post">
+    #         <p><input type=text name=username>
+    #         <p><input type=submit value=Login>
+    #     </form>
+    # '''
 
 @app.route('/logout')
 def logout():
@@ -286,6 +287,12 @@ class UploadTest (FlaskForm):
     upload_tests = FileField ()
 
     submit = SubmitField('Upload')
+
+class LoginForm (FlaskForm):
+    username =  StringField('User name')
+    #password =  StringField('Password')
+
+    submit = SubmitField('Login')
 
 @app.route ("/test_upload", methods=('GET', 'POST'))
 def test_upload ():
