@@ -1,4 +1,13 @@
+from flask import escape
 import json
+
+def logged_in_user (session):
+    if 'username' in session:
+        info = 'Logged in as %s' % escape(session['username'])
+    else:
+        info = 'You are not logged in'
+
+    return info
 
 def import_from_postman (folder, from_file, to_file):
 	import_result = False

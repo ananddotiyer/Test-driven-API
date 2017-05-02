@@ -26,17 +26,27 @@ from modules.libraries.api_object import *
 from modules.tests.tests_suite import *
 from os import path
 
-def main_config (run_from_web):
+def main_config (run_from_web, username=""):
 	global_dict["tests"] = [] #contains the same set of tests globally, so that it can be accesssed by web pages.
 
-	tests_folder = path.dirname(path.abspath(__file__)) + "/modules/tests"
+	if run_from_web: #if found running from the web
+		#tests_folder_name = "tests_anand"
+		tests_folder_name = "tests_%s" %(username)
+		tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
+		tests_modules_name = "modules.%s." %(tests_folder_name)
+	else:
+		tests_folder = ""
+		while not os.path.isdir (tests_folder):
+			tests_folder_name = raw_input ("Enter tests_folder name: ")
+			tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
+			tests_modules_name = "modules.%s." %(tests_folder_name)
 
 	for test_category in tests_suite:
 		subfolder = ""
 		tests_in_folder = test_category.split ('.')
 	
 		#import only the required list of tests; contained in test_list
-		mod = import_module ("modules.tests." + test_category)
+		mod = import_module (tests_modules_name + test_category)
 		if len(tests_in_folder) > 1:
 			for folder in tests_in_folder[:-1]:
 				subfolder += "\\" + folder
@@ -53,16 +63,19 @@ def main_config (run_from_web):
 			global_dict["tests"].append ((test, test_category, subfolder.strip ('\\')))
 	
 	if run_from_web: #if found running from the web
-		global_dict["debuglog"] = "..\\tests\\debuglog\\"
-		global_dict["reslog"] = "..\\tests\\"
-		global_dict["schema_folder"] = "..\\tests\\schema\\"
-		global_dict["test_folder"] = "..\\tests\\"
+		global_dict["debuglog"] = tests_folder + "\\debuglog\\"
+		global_dict["reslog"] = tests_folder + "\\"
+		global_dict["schema_folder"] = tests_folder + "\\schema\\"
+		global_dict["test_module"] = tests_modules_name
+		global_dict["test_folder"] = tests_folder + "\\"
 		global_dict["run_selected"] = []
 	else:
-		global_dict["debuglog"] = "modules\\tests\\debuglog\\"
-		global_dict["reslog"] = "modules\\tests\\"
-		global_dict["schema_folder"] = "modules\\tests\\schema\\"
-		global_dict["test_folder"] = "modules\\tests\\"
+		tests_folder = tests_modules_name.replace ('.', "\\") #not full path of tests_folder
+		global_dict["debuglog"] = tests_folder + "debuglog\\"
+		global_dict["reslog"] = tests_folder
+		global_dict["schema_folder"] = tests_folder + "schema\\"
+		global_dict["test_module"] = tests_modules_name
+		global_dict["test_folder"] = tests_folder
 		global_dict["run_selected"] = global_dict["tests"]
 
 	return global_dict

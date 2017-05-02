@@ -3,11 +3,12 @@
 {% block navbar %}
     <nav class="navbar navbar-inverse" role="navigation">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Tests</a>
+            <a class="navbar-brand" href="{{ url_for('tests') }}">Tests</a>
             <a class="navbar-brand" href="{{ url_for('test_upload') }}">Upload</a>
             <a class="navbar-brand" href="{{ url_for('results') }}">Results</a>
             <a class="navbar-brand" href="{{ url_for('schema') }}">Schema</a>
             <a class="navbar-brand" href="{{ url_for('cleanup') }}">Cleanup</a>
+            <a class="navbar-brand" href="{{ url_for('logout') }}">Logout</a>
         </div>    
     </nav>
 {% endblock %}

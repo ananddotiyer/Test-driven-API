@@ -13,7 +13,7 @@ __status__ = "Production"
 
 from importlib import import_module
 
-from flask import Flask, request, send_from_directory, render_template, redirect, url_for
+from flask import Flask, session, escape, request, send_from_directory, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FileField
@@ -33,12 +33,43 @@ if __name__ == '__main__' and __package__ is None:
 
 from main import main_config, main_driver
 from tests.tests_suite import *
-    
-@app.route('/', methods=('GET', 'POST'))
+
+# @app.route('/', methods=('GET', 'POST'))
+# def index():
+#     return render_template('index.html')
+
+@app.route('/')
 def index():
+    info = logged_in_user (session)
+    return render_template('user.html', info=info)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('tests'))
+    return '''
+        <form action="" method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+@app.route('/tests', methods=('GET', 'POST'))
+def tests():
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
     test_list = []
 
-    global_dict = main_config (True)
+    global_dict = main_config (True, escape(session['username']))
 
     for test in global_dict["tests"]:
         test_list.append (test[0]) #global_dict["tests"] is a tuple consisting of tests, test_category and subfolder
@@ -67,21 +98,22 @@ def index():
         global_dict["running"] = False #so that you can run it again!
         return redirect(url_for('results'))
     
-    return render_template('index.html', tests=test_list)
+    return render_template('tests.html', tests=test_list)
 
 @app.route ("/results")
 def results ():
     import csv
     import os
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
     
     try:
-        reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
-
-        tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
-        debuglog_folder = tests_folder + "/debuglog"
-        schema_folder = tests_folder + "/schema"
+        tests_folder = global_dict["test_folder"]
+        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
 
         results_list = []
         for line in reader:
@@ -91,7 +123,7 @@ def results ():
             line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
             
             folder_parts = line["test_path"].split ('\\')
-            folder = tests_folder + '\\' + '\\'.join (folder_parts[:-1]) #tests folder
+            folder = tests_folder + '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] #only the filename
             line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
@@ -118,19 +150,21 @@ def run ():
     import csv
     import os
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
     
     try:
         # if not global_dict["running"]:
         #     global_dict["running"] = True #so that you don't run it again!
         #     main_driver (True)
 
-        reader = csv.DictReader(open('..\\tests\\passfaillog.csv'))
         global_dict["running"] = False
 
-        tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests"
-        debuglog_folder = tests_folder + "/debuglog"
-        schema_folder = tests_folder + "/schema"
+        tests_folder = global_dict["test_folder"]
+        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
 
         results_list = []
         for line in reader:
@@ -140,7 +174,7 @@ def run ():
             line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
 
             folder_parts = line["test_path"].split ('\\')
-            folder = tests_folder + '\\' + '\\'.join (folder_parts[:-1]) #tests folder
+            folder = tests_folder + '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] #only the filename
             line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
@@ -164,12 +198,16 @@ def schema ():
     lines = []
     tabs = []
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     filename = request.args.get ('schema')
     try:
         if not filename:
-            reader = open('..\\tests\\schema.txt')
+            reader = open(global_dict["schema_folder"] + "/schema.txt")
         else:
             reader = open(global_dict["schema_folder"] + "/" + filename)
         
@@ -188,7 +226,11 @@ def cleanup ():
     import os
     import shutil
     
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
     
     schema_folder = global_dict["schema_folder"]
     for file in os.listdir(schema_folder):
@@ -208,7 +250,11 @@ def cleanup ():
 def debuglog ():
     lines = []
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     filename = request.args.get ('debuglog')
     reader = open(global_dict["debuglog"] + "/" + filename)
@@ -243,7 +289,11 @@ class UploadTest (FlaskForm):
 
 @app.route ("/test_upload", methods=('GET', 'POST'))
 def test_upload ():
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     try:
         form = UploadTest()
@@ -252,7 +302,7 @@ def test_upload ():
         upload_result = ""
 
         if form.validate_on_submit():
-            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
+            tests_folder = global_dict["test_folder"] + "Misc"
             #Import POSTMAN tests (exported from POSTMAN)   
             f = form.import_from_postman.data
             if not f.filename == "":
@@ -285,7 +335,11 @@ def test_upload ():
 
 @app.route ("/test_created_upload", methods=('GET', 'POST'))
 def test_created_upload ():
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     try:
         form = UploadTest()
@@ -295,7 +349,7 @@ def test_created_upload ():
 
         if form.validate_on_submit():
             #Upload the exported file
-            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc"
+            tests_folder = global_dict["test_folder"] + "Misc"
             f = form.upload.data
             filename = secure_filename(f.filename)
             f.save(tests_folder + "\\" + filename)
@@ -311,7 +365,11 @@ def test_created_upload ():
 def duplicate ():
     lines = []
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
     tests = global_dict["tests"]
 
     api_category = request.args.get ('cat')
@@ -351,10 +409,10 @@ def duplicate ():
             new_test["api_function"] = form.function.data
             new_test["output_mode"] = form.output.data
 
-            mod = import_module ("modules.tests.Misc.tests_user_defined")
+            mod = import_module (global_dict["test_module"] + "Misc.tests_user_defined")
             tests = getattr (mod, "tests_user_defined")
             
-            tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
+            tests_folder = global_dict["test_folder"] + "Misc/"
             with open (tests_folder + "tests_user_defined.py", "w") as fp:
                 fp.write ("tests_user_defined = [\n")
                 #existing tests
@@ -375,7 +433,6 @@ def duplicate ():
                 fp.write ("}\n")
                 fp.write ("]")
 
-            #return redirect(url_for('test_created_upload')) #this form creates test (tests_user_defined.py) locally.  Also allows to select file and upload it to tests folder in server.
             return redirect(url_for('test_created')) #creates test (tests_user_defined.py) in tests folder in server.
         return render_template ('duplicate.html', form=form)
     except:
@@ -386,7 +443,11 @@ def duplicate ():
 def delete ():
     lines = []
 
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
     tests = global_dict["tests"]
 
     api_category = request.args.get ('cat')
@@ -400,18 +461,19 @@ def delete ():
         if cat == api_category and test["api_name"] == api_name:
             break
     try:
-        mod = import_module ("modules.tests.Misc.tests_user_defined")
+        mod = import_module (global_dict["test_module"] + "Misc.tests_user_defined")
         tests = getattr (mod, "tests_user_defined")
         tests.remove (test)
         
-        tests_folder = path.dirname(path.dirname(path.dirname(path.abspath(__file__)))) + "/modules/tests/Misc/"
+        tests_folder = global_dict["test_folder"] + "Misc/"
         with open (tests_folder + "tests_user_defined.py", "w") as fp:
             fp.write ("tests_user_defined = [\n")
             #existing tests
             for test in tests:
                 fp.write ("{\n")
                 for each in test:
-                    if type (test[each] ) == str:
+                    print test[each], type (test[each] )
+                    if type (test[each] ) == str or type (test[each] ) == unicode:
                         fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
                     else:
                         fp.write ('\t"%s" : %s,\n' %(each, test[each]))
@@ -426,25 +488,37 @@ def delete ():
 
 @app.route ("/download")
 def download ():
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     folder = request.args.get ('folder')
     filename = request.args.get ('filename')
     
-    if "tests" in folder: #allow only tests to be downloaded
+    if "tests_%s" %(escape(session['username'])) in folder: #allow only tests for the corresponding login to be downloaded
         return send_from_directory(folder, filename, as_attachment=True)
     else:
         return render_template ('no_test.html')
 
 @app.route ("/test_uploaded")
 def test_uploaded ():
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"))
 
 @app.route ("/test_created")
 def test_created ():
-    global_dict = main_config (True)
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
 
     return render_template ('test_created.html')
 
@@ -454,4 +528,7 @@ def not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    # set the secret key.  keep this really secret:
+    #app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+    app.run(host='0.0.0.0', threaded=True, debug=True)
