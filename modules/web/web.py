@@ -51,8 +51,8 @@ def login():
         session['username'] = form.username.data
         return redirect(url_for('tests'))
 
-    mac = '-'.join(("%012X" % get_mac())[i:i+2] for i in range(0, 12, 2))
-    form.username.data = '%s' %(mac[:-3])
+    # mac = '-'.join(("%012X" % get_mac())[i:i+2] for i in range(0, 12, 2))
+    # form.username.data = '%s' %(mac[:-3])
     return render_template ('login.html', form=form)
 
     # return '''
