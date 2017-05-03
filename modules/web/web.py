@@ -19,6 +19,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FileField
 from wtforms.validators import Required, Length
 from werkzeug.utils import secure_filename
+from uuid import getnode as get_mac
 import traceback
 from support import *
 
@@ -36,8 +37,11 @@ from tests.tests_suite import *
 
 @app.route('/')
 def index():
-    info = logged_in_user (session)
-    return render_template('user.html', info=info)
+    if 'username' in session and not escape(session['username']) == "":
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+    else:
+        return redirect(url_for('login'))    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,6 +51,8 @@ def login():
         session['username'] = form.username.data
         return redirect(url_for('tests'))
 
+    mac = '-'.join(("%012X" % get_mac())[i:i+2] for i in range(0, 12, 2))
+    form.username.data = '%s' %(mac[:-3])
     return render_template ('login.html', form=form)
 
     # return '''
@@ -544,5 +550,6 @@ def not_found(e):
 if __name__ == '__main__':
     # set the secret key.  keep this really secret:
     #app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-
-    app.run(host='0.0.0.0', threaded=True, debug=True)
+    while True:
+        print "Restarting..."
+        app.run(host='0.0.0.0', threaded=True, debug=True)
