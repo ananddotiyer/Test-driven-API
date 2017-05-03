@@ -205,13 +205,13 @@ def report_it (result, test="", api_url="", api_type="",api_expected=""):
         if (result):
             print ("All is well!!")
             global_dict["debuglog"].write ("All is well!!\n")
-            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"PASS\"\")\",")
+            global_dict["reslog"].write ("\"=HYPERLINK(\"\"debuglog\\" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"PASS\"\")\",")
         else:
-            global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"FAIL\"\")\",")
+            global_dict["reslog"].write ("\"=HYPERLINK(\"\"debuglog\\" + global_dict['debuglog_filename'] + "\"\"" + "," + "\"\"FAIL\"\")\",")
         
         try:
             if api_expected["response_schema"] == "match":
-                global_dict["reslog"].write ("\"=HYPERLINK(\"\"" + global_dict['schema_filename'] + "\"\"" + "," + "\"\"schema\"\")\"")
+                global_dict["reslog"].write ("\"=HYPERLINK(\"\"schema\\" + global_dict['schema_filename'] + "\"\"" + "," + "\"\"schema\"\")\"")
         except:
             pass
         

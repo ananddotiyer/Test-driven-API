@@ -29,17 +29,9 @@ from os import path
 def main_config (run_from_web, username=""):
 	global_dict["tests"] = [] #contains the same set of tests globally, so that it can be accesssed by web pages.
 
-	if run_from_web: #if found running from the web
-		#tests_folder_name = "tests_anand"
-		tests_folder_name = "tests_%s" %(username)
-		tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
-		tests_modules_name = "modules.%s." %(tests_folder_name)
-	else:
-		tests_folder = ""
-		while not os.path.isdir (tests_folder):
-			tests_folder_name = raw_input ("Enter tests_folder name: ")
-			tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
-			tests_modules_name = "modules.%s." %(tests_folder_name)
+	tests_folder_name = "tests_%s" %(username)
+	tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
+	tests_modules_name = "modules.%s." %(tests_folder_name)
 
 	test_list = []
 	for test_category in tests_suite:
@@ -85,9 +77,9 @@ def main_config (run_from_web, username=""):
 
 	return global_dict
 		
-def main_driver (run_from_web):
+def main_driver (run_from_web, username=""):
 	if not run_from_web:
-		main_config (False)
+		main_config (False, username)
 
 	report_start ()
 	
@@ -217,5 +209,5 @@ def main_driver (run_from_web):
 		pass
 #main program
 if __name__ == '__main__':
-	main_config (False)
-	main_driver (False)
+	main_config (False, username="anand")
+	main_driver (False, username="anand")

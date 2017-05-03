@@ -1,6 +1,12 @@
 from flask import escape
 import json
 
+def extract_filename_from_hyperlink (hyperlink):
+    return hyperlink.replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+
+def extract_text_from_hyperlink (hyperlink):
+    return hyperlink.replace ('=HYPERLINK', "").split (',')[1].strip ('"()\\')
+
 def logged_in_user (session):
     if 'username' in session:
         info = 'Logged in as %s' % escape(session['username'])

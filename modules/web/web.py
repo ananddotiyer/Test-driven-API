@@ -13,7 +13,7 @@ __status__ = "Production"
 
 from importlib import import_module
 
-from flask import Flask, session, escape, request, send_from_directory, render_template, redirect, url_for
+from flask import Flask, session, escape, request, send_from_directory, render_template, redirect, url_for, jsonify
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FileField
@@ -127,26 +127,26 @@ def results ():
             results_list.append(line)
             
             #making the path for the exported csv file
-            line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+            file_path = extract_filename_from_hyperlink (line["test_path"])
             
-            folder_parts = line["test_path"].split ('\\')
+            folder_parts = file_path.split ('\\')
             folder = tests_folder + '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] #only the filename
             line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
-            #making the path for the specific debuglog
-            split_result = line["result"].replace ('=HYPERLINK', "").split (',')
-            line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
-            line["debuglog"] = "debuglog?debuglog=%s" %(line["debuglog"])
-            line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
+            file_path = extract_filename_from_hyperlink (line["result"])
+            folder_parts = file_path.split ('\\')
+            filename = folder_parts[-1] #only the filename
+            line["debuglog"] = "debuglog?debuglog=%s" %(filename)
+            line["result"] = extract_text_from_hyperlink (line["result"]) #FAIL, PASS
 
-            #making the path for the schema compare file
-            line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            schema_file = global_dict["schema_folder"] + line["schema"]
+            file_path = extract_filename_from_hyperlink (line["schema"])
+            folder_parts = file_path.split ('\\')
+            filename = folder_parts[-1] #only the filename
+            schema_file = global_dict["schema_folder"] + filename
             if not os.path.isfile(schema_file):
                 line["schema"] = "none"
-            line["schema"] = "schema?schema=%s" %(line["schema"])
-
+            line["schema"] = "schema?schema=%s" %(filename)
         return render_template ('results.html', results=results_list)
     except:
         traceback.print_exc ()
@@ -178,27 +178,64 @@ def run ():
             results_list.append(line)
             
             #making the path for the exported csv file
-            line["test_path"] = line["test_path"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-
-            folder_parts = line["test_path"].split ('\\')
+            file_path = extract_filename_from_hyperlink (line["test_path"])
+            folder_parts = file_path.split ('\\')
             folder = tests_folder + '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] #only the filename
             line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
             
             #making the path for the specific debuglog
-            split_result = line["result"].replace ('=HYPERLINK', "").split (',')
-            line["debuglog"] = split_result[0].strip ('"()\\') #new field contains filename.
-            line["debuglog"] = "debuglog?debuglog=%s" %(line["debuglog"])
-            line["result"] = split_result[1].strip ('"()\\') #FAIL, PASS
+            file_path = extract_filename_from_hyperlink (line["result"])
+            folder_parts = file_path.split ('\\')
+            filename = folder_parts[-1] #only the filename
+            line["debuglog"] = "debuglog?debuglog=%s" %(filename)
+            line["result"] = extract_text_from_hyperlink (line["result"]) #FAIL, PASS
 
             #making the path for the schema compare file
-            line["schema"] = line["schema"].replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
-            line["schema"] = "schema?schema=%s" %(line["schema"])
+            file_path = extract_filename_from_hyperlink (line["schema"])
+            folder_parts = file_path.split ('\\')
+            filename = folder_parts[-1] #only the filename
+            schema_file = global_dict["schema_folder"] + filename
+            if not os.path.isfile(schema_file):
+                line["schema"] = "none"
+            line["schema"] = "schema?schema=%s" %(filename)
              
         return render_template ('run.html', results=results_list)
     except:
         traceback.print_exc ()
         return render_template ('no_results.html', running=global_dict["running"])
+
+@app.route ("/run_ci")
+def run_ci ():
+    import csv
+    import json
+
+    try:
+        username = request.args.get ('username')
+    
+        global_dict = main_config (True, username=username)
+        global_dict["run_selected"] = global_dict["tests"]
+    
+        main_driver (True)
+    
+        tests_folder = global_dict["test_folder"]
+        print tests_folder
+
+        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
+        line = ""
+        for row in reader:
+            line += json.dumps (row)
+            line += '\n'
+
+        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
+        with open(tests_folder + 'ci.json', 'w') as jsonfile:
+            for row in reader:
+                json.dump(row, jsonfile)
+                jsonfile.write('\n')
+    
+        return jsonify(line)
+    except:
+        return render_template ('no_ops.html')
 
 @app.route ("/schema")
 def schema ():
