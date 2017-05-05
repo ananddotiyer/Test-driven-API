@@ -13,8 +13,6 @@ __email__ = "ananddotiyer@gmail.com"
 __status__ = "Production"
 #############################################################################################################################################
 
-from modules.tests.tests_suite import *
-
 class api_object(dict):
 	__getattr__= dict.__getitem__
 	__setattr__= dict.__setitem__
@@ -22,7 +20,6 @@ class api_object(dict):
 	def __init__(self, test):
 		self.api_name = test["api_name"]
 		self.api_type = test["api_type"]
-		#self.api_url = global_dict["server"] + test["api_base_url"]
 		self.api_url = test["api_url"]
 		self.api_function = test["api_function"]
 		self.api_params = test["api_params"]
@@ -34,10 +31,9 @@ class api_object(dict):
 		
 		try:
 			self.api_headers = test["api_headers"]
-			self.api_headers.update (global_dict["headers"])
 		except:
-			self.api_headers = global_dict["headers"]
-
+			self.api_headers = {}
+		
 		self.api_expected = test["api_expected"]
 		try:
 			self.api_expected["should_fail"] = test["api_expected"]["should_fail"]

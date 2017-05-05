@@ -100,7 +100,7 @@ def tests():
         
         if not global_dict["running"]:
             global_dict["running"] = True #so that you don't run it again!
-            main_driver (True)
+            main_driver (True, escape(session['username']))
         
         global_dict["running"] = False #so that you can run it again!
         return redirect(url_for('results'))
@@ -216,24 +216,35 @@ def run_ci ():
         global_dict = main_config (True, username=username)
         global_dict["run_selected"] = global_dict["tests"]
     
-        main_driver (True)
+        main_driver (True, username=username)
     
         tests_folder = global_dict["test_folder"]
         print tests_folder
 
         reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
-        line = ""
+        line = "["
         for row in reader:
+            print row
             line += json.dumps (row)
-            line += '\n'
-
+            line += ','
+        line = line.strip (',')
+        line += "]"
+        
+        print "Before: " + line
+        line = line.replace ('\\"', '\\\'')
+        line = line.replace ('\\\\', '\\\\\\\\')
+        print "After: " + line
+        
         reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
         with open(tests_folder + 'ci.json', 'w') as jsonfile:
+            jsonfile.write('[')
             for row in reader:
                 json.dump(row, jsonfile)
-                jsonfile.write('\n')
+                jsonfile.write(',')
+            jsonfile.write(']')
     
-        return jsonify(line)
+        #return jsonify (line)
+        return line
     except:
         return render_template ('no_ops.html')
 

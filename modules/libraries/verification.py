@@ -20,10 +20,10 @@ import sys
 import os
 import traceback
 import json_schema
-from modules.tests.tests_suite import *
+#from modules.tests.tests_suite import *
 from jsonpath_rw import jsonpath, parse
 
-def compare_equals (json_path, actual, expected):
+def compare_equals (json_path, actual, expected, global_dict):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) == set (expected)): #contains or equal
@@ -33,7 +33,7 @@ def compare_equals (json_path, actual, expected):
     else:
         return True
 
-def compare_contains (json_path, actual, expected):
+def compare_contains (json_path, actual, expecte, global_dict):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (set (actual) <= set (expected)): #contains or equal
@@ -43,7 +43,7 @@ def compare_contains (json_path, actual, expected):
     else:
         return True
 
-def compare_types (json_path, actual, expected):
+def compare_types (json_path, actual, expected, global_dict):
     jsonpath_expr = parse(json_path)
     actual = [match.value for match in jsonpath_expr.find(actual)]
     if not (str (type (actual[0])) == "<type '%s'>" %(expected)): #same type
@@ -85,7 +85,7 @@ def match_schema (data, schema_object):
     except:
         traceback.print_exc(file=sys.stdout)
 
-def VerifyFilter (actual, expected):
+def VerifyFilter (actual, expected, global_dict):
     retValue = True
     try:
         for each in expected["filter"]["location"].split ('\\'):
@@ -109,14 +109,14 @@ def VerifyFilter (actual, expected):
         pass #filter dictionary might not be available in the test
     return retValue
 
-def VerifyRowCount (actual_rowCount, exp_rowCount):
+def VerifyRowCount (actual_rowCount, exp_rowCount, global_dict):
     if not (exp_rowCount == 0 or exp_rowCount == actual_rowCount): #rowcount won't be compared, if 0
         global_dict["debuglog"].write (str (exp_rowCount) + " rows expected, but " + str (actual_rowCount) + "found!\n")
         return False
     else:
         return True
 
-def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
+def VerifyExpected (actual, expected, global_dict, json_file=None, case_sensitive=True):
     result = True
     actual_flattened = ""
 
@@ -166,7 +166,7 @@ def VerifyExpected (actual, expected, json_file=None, case_sensitive=True):
                 if exp[:5] == "call_":
                     function = getattr (sys.modules[__name__], exp[5:])
                     for json_path in expected[exp].keys():
-                        result_function = function (json_path, actual, expected[exp][json_path])
+                        result_function = function (json_path, actual, expected[exp][json_path], global_dict)
                         result = result and result_function
             except:
                 pass
@@ -189,7 +189,7 @@ def check_status_code (status_code, should_fail):
 	
 	return result
 
-def report_start ():
+def report_start (global_dict):
     global_dict["start_time"] = datetime.datetime.now()
     date_time = global_dict["start_time"].strftime('%Y-%m-%d_%H-%M-%S')
 
@@ -200,7 +200,7 @@ def report_start ():
     global_dict["reslog"]  = open(global_dict["reslog"] + "passfaillog.csv",'a')
     #global_dict["reslog"].write ("test_path,api_url,api_type,executed_at,time_spent (sec),result,schema\n")
 
-def report_it (result, test="", api_url="", api_type="",api_expected=""):
+def report_it (result, global_dict, test="", api_url="", api_type="",api_expected=""):
     if isinstance (result, bool):
         if (result):
             print ("All is well!!")

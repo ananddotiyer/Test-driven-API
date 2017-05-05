@@ -16,13 +16,12 @@ __status__ = "Production"
 from ..export.export_apphomekey import *
 from ..export.export_misc import *
 from verification import *
-from ..tests.tests_suite import *
 from base64 import b64encode
 import json
 import codecs
 
 ################################################generic api function#################################################
-def api_export (current_api):
+def api_export (current_api, global_dict):
 	filename = current_api.actuals_folder + current_api.api_name
 	expected = current_api.api_expected
 	data_org = current_api.data
@@ -39,6 +38,7 @@ def api_export (current_api):
 	try:
 		data_dict = json.loads (data_org)
 	except:
+		traceback.print_exc ()
 		raise Exception ("Unable to decipher response data!")
 
 	rowCount = 0
@@ -69,13 +69,13 @@ def api_export (current_api):
 				write_data_dict.append (data_dict)
 			
 			rowCount = len (write_data_dict)
-			WriteRow (f, write_data_dict, current_api)
+			WriteRow (f, write_data_dict, current_api, global_dict)
 
-			result = result and VerifyExpected (data_org, expected, json_file=schema_file + ".json")
+			result = result and VerifyExpected (data_org, expected, global_dict, json_file=schema_file + ".json")
 	else:
-		result = result and VerifyExpected (data_org, expected)
+		result = result and VerifyExpected (data_org, expected, global_dict)
 
-	result_rowCount = VerifyRowCount (rowCount, expected["rowcount"])
+	result_rowCount = VerifyRowCount (rowCount, expected["rowcount"], global_dict)
 	result = result and result_rowCount
 			
 	try:

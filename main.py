@@ -23,18 +23,25 @@ import traceback
 from importlib import import_module
 from modules.libraries.verification import *
 from modules.libraries.api_object import *
-from modules.tests.tests_suite import *
 from os import path
 
 def main_config (run_from_web, username=""):
-	global_dict["tests"] = [] #contains the same set of tests globally, so that it can be accesssed by web pages.
+	import sm
 
 	tests_folder_name = "tests_%s" %(username)
 	tests_folder = "%s/modules/%s" %(path.dirname(path.abspath(__file__)), tests_folder_name)
 	tests_modules_name = "modules.%s." %(tests_folder_name)
 
+	#create separate variables (global_dict, run_list, tests_suite) for each user in the system.
+	mod_suite = import_module (tests_modules_name + "tests_suite")
+	sm._set ("global_dict", tests_folder_name, getattr (mod_suite, "global_dict"))
+	sm._set ("run_list", tests_folder_name, getattr (mod_suite, "run_list"))
+	sm._set ("tests_suite", tests_folder_name, getattr (mod_suite, "tests_suite"))
+
+	sm._set_in_list ("global_dict", tests_folder_name, "tests", [])
+	
 	test_list = []
-	for test_category in tests_suite:
+	for test_category in sm._get ("tests_suite", tests_folder_name):
 		subfolder = ""
 		tests_in_folder = test_category.split ('.')
 	
@@ -49,47 +56,57 @@ def main_config (run_from_web, username=""):
 			test_category = folder + "." + tests_in_folder[-1] #Misc.tests_user_defined
 		except:
 			pass
-		
-		
+
 		for test in test_list:
 			test["api_category"] = test_category 
 			folder_parts = (tests_folder + "\\" + test["api_category"]).replace ('.','\\').split ('\\')
 			folder = '\\'.join (folder_parts[:-1]) #tests folder
 			filename = folder_parts[-1] + ".py" #only the filename.
 			test["api_download"] = "download?folder=%s&filename=%s" %(folder, filename) #download tests
-			global_dict["tests"].append ((test, test_category, subfolder.strip ('\\')))
+			sm._append ("global_dict", tests_folder_name, "tests", (test, test_category, subfolder.strip ('\\')))
 	
 	if run_from_web: #if found running from the web
-		global_dict["debuglog"] = tests_folder + "\\debuglog\\"
-		global_dict["reslog"] = tests_folder + "\\"
-		global_dict["schema_folder"] = tests_folder + "\\schema\\"
-		global_dict["test_module"] = tests_modules_name
-		global_dict["test_folder"] = tests_folder + "\\"
-		global_dict["run_selected"] = []
+		sm._set_in_list ("global_dict", tests_folder_name, "debuglog", tests_folder + "\\debuglog\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "reslog", tests_folder + "\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "schema_folder", tests_folder + "\\schema\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "test_module", tests_modules_name)
+		sm._set_in_list ("global_dict", tests_folder_name, "test_folder", tests_folder + "\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "run_selected", [])
 	else:
 		tests_folder = tests_modules_name.replace ('.', "\\") #not full path of tests_folder
-		global_dict["debuglog"] = tests_folder + "debuglog\\"
-		global_dict["reslog"] = tests_folder
-		global_dict["schema_folder"] = tests_folder + "schema\\"
-		global_dict["test_module"] = tests_modules_name
-		global_dict["test_folder"] = tests_folder
-		global_dict["run_selected"] = global_dict["tests"]
+		sm._set_in_list ("global_dict", tests_folder_name, "debuglog", tests_folder + "debuglog\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "reslog", tests_folder)
+		sm._set_in_list ("global_dict", tests_folder_name, "schema_folder", tests_folder + "schema\\")
+		sm._set_in_list ("global_dict", tests_folder_name, "test_module", tests_modules_name)
+		sm._set_in_list ("global_dict", tests_folder_name, "test_folder", tests_folder)
+		tests_in_list = sm._get_in_list ("global_dict", tests_folder_name, "tests")
+		sm._set_in_list ("global_dict", tests_folder_name, "run_selected", tests_in_list)
 
-	return global_dict
+	return sm._get ("global_dict", tests_folder_name)
 		
 def main_driver (run_from_web, username=""):
+	import sm
+
+	tests_folder_name = "tests_%s" %(username)
+
 	if not run_from_web:
 		main_config (False, username)
 
-	report_start ()
-	
-	for test in global_dict["run_selected"]:
+	report_start (sm._get ("global_dict", tests_folder_name))
+
+	debuglog = sm._get_in_list ("global_dict", tests_folder_name, "debuglog")
+	run_selected = sm._get_in_list ("global_dict", tests_folder_name, "run_selected")
+	test_folder = sm._get_in_list ("global_dict", tests_folder_name, "test_folder")
+	reslog = sm._get_in_list ("global_dict", tests_folder_name, "reslog")
+	schema_folder = sm._get_in_list ("global_dict", tests_folder_name, "schema_folder")
+
+	for test in run_selected:
 		current_api = api_object(test[0]) #test[0] indicates the actual test
 		test_category = test[1] #test category
 		subfolder = test[2] #subfolder
 		
 		#Execute only the api_types in run_list (tests_suite.py)
-		if not current_api.api_type in run_list:
+		if not current_api.api_type in sm._get ("run_list", tests_folder_name):
 			continue
 		
 		#substitute for api_store
@@ -107,14 +124,16 @@ def main_driver (run_from_web, username=""):
 						#Replace anything between <> from global_dict                       
 						matches = re.findall ("<(.*?)>", current_api[each_key][each_subkey], re.DOTALL)
 						for match in matches:
-							current_api[each_key][each_subkey] = re.sub('<' + match + '>',global_dict[match], current_api[each_key][each_subkey])
+							substitute_value = sm._get_in_list ("global_dict", tests_folder_name, match)
+							current_api[each_key][each_subkey] = re.sub('<' + match + '>', substitute_value, current_api[each_key][each_subkey])
 				else:
 					#Replace anything between <> from global_dict                       
 					matches = re.findall("<(.*?)>", current_api[each_key], re.DOTALL)
 					for match in matches:
-						current_api[each_key] = re.sub('<' + match + '>',global_dict[match], current_api[each_key])
+						substitute_value = sm._get_in_list ("global_dict", tests_folder_name, match)
+						current_api[each_key] = re.sub('<' + match + '>', substitute_value, current_api[each_key])
 		except:
-			traceback.print_exc (file=global_dict["debuglog"]) #api_store may not be present
+			traceback.print_exc (file=debuglog) #api_store may not be present
 
 		#Store object attributes temporarily, before using them
 		api_url = current_api.api_url
@@ -132,7 +151,7 @@ def main_driver (run_from_web, username=""):
 			for each in url_placeholders:
 				matchIt = re.compile ("{" + each + "}")
 				if url_placeholders[each] == "global_dict":
-					repl = global_dict[each]
+					repl = sm._get_in_list ("global_dict", tests_folder_name, "each")
 				else:
 					repl = url_placeholders[each]
 				api_url = matchIt.sub(repl, api_url)
@@ -152,6 +171,7 @@ def main_driver (run_from_web, username=""):
 		#define headers for the api
 		headers = {}
 		headers.update (api_headers)
+		headers.update (sm._get_in_list ("global_dict", tests_folder_name, "headers"))
 		
 		#get the function pointer
 		mod = import_module ("modules.libraries.api_functions")
@@ -169,42 +189,44 @@ def main_driver (run_from_web, username=""):
 			
 			if api_type == "PUT":
 				api_name = api_name + "_put" #distinguish the .csv filename for PUT calls
-				global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+				headers.update ({'Content-type': 'application/json', 'Accept': 'application/json'})
 				response = requests.put (api_url, data = json.dumps (api_params), headers=headers)
 			
 			if api_type == "POST":
-				global_dict["headers"].update ({'Content-type': 'application/json', 'Accept': 'application/json'})
+				headers.update ({'Content-type': 'application/json', 'Accept': 'application/json'})
 				response = requests.post (api_url, data = json.dumps (api_params), headers=headers)
 
 			current_api.data = response.text
 			current_api.status_code = response.status_code
 	
-			actuals_folder = "%s%s\\%s\\" %(global_dict["test_folder"], subfolder, "actuals") #re-using for writing the reports.
+			actuals_folder = "%s%s\\%s\\" %(test_folder, subfolder, "actuals") #re-using for writing the reports.
 			current_api.actuals_folder = actuals_folder
 
 			report_it ("datetime",
-				   test="%s\\%s" %(test_category.replace ('.', '\\'), api_name),
-				   api_url=api_url,
-				   api_type=api_type)
+				sm._get ("global_dict", tests_folder_name),
+				test="%s\\%s" %(test_category.replace ('.', '\\'), api_name),
+				api_url=api_url,
+				api_type=api_type)
 			
 			#Parse the response, and verify the results
 			if not (api_type == "DELETE"):
 				if function_to_call is not None:
-					result = function_to_call (current_api)
+					result = function_to_call (current_api, sm._get ("global_dict", tests_folder_name))
 				else:
 					result = True
 			else:
 				result = True #assume that it passed
 		except Exception: #so, you can continue with the next test
-			traceback.print_exc (file=global_dict["debuglog"])
+			traceback.print_exc (file=debuglog)
 
 		report_it (bool (result),
+				   sm._get ("global_dict", tests_folder_name),
 				   api_expected=api_expected)
 				
 	try:
-		global_dict["debuglog"].close()
-		global_dict["reslog"].close()
-		global_dict["schema"].close()
+		debuglog.close()
+		reslog.close()
+		schema_folder.close()
 	except:
 		pass
 #main program

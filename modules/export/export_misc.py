@@ -51,7 +51,7 @@ def write (f, column, embed=False, ends_with=','):
 
 		f.write (ends_with)
 
-def global_store (api_store, api_params, data):
+def global_store (api_store, api_params, data, global_dict):
 	#storing into global_dict
 
 	try:
@@ -103,18 +103,15 @@ def global_store (api_store, api_params, data):
 		pass
 
 ####Generic####
-def WriteRow (f, data_dict, current_api):
+def WriteRow (f, data_dict, current_api, global_dict):
 	try:
 		expected = current_api.api_expected
 		api_store = current_api.api_store
 		api_params = current_api.api_params
 		output_mode = current_api.output_mode
 
-		if not VerifyFilter (data_dict, expected):
-			return
-
 		try:
-			global_store (api_store, api_params, data_dict)
+			global_store (api_store, api_params, data_dict, global_dict)
 		except:
 			pass
 

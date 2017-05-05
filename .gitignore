@@ -1,3 +1,6 @@
 *.pyc
 *.csv
 *.txt
+tests_anand/
+tests_chidambara/
+tests_ci/
