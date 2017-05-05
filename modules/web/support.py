@@ -2,18 +2,18 @@ from flask import escape
 import json
 
 def extract_filename_from_hyperlink (hyperlink):
-    return hyperlink.replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
+	return hyperlink.replace ('=HYPERLINK', "").split (',')[0].strip ('"()\\')
 
 def extract_text_from_hyperlink (hyperlink):
-    return hyperlink.replace ('=HYPERLINK', "").split (',')[1].strip ('"()\\')
+	return hyperlink.replace ('=HYPERLINK', "").split (',')[1].strip ('"()\\')
 
 def logged_in_user (session):
-    if 'username' in session:
-        info = 'Logged in as %s' % escape(session['username'])
-    else:
-        info = 'You are not logged in'
+	if 'username' in session:
+		info = 'Logged in as %s' % escape(session['username'])
+	else:
+		info = 'You are not logged in'
 
-    return info
+	return info
 
 def import_from_postman (folder, from_file, to_file):
 	import_result = False
@@ -50,7 +50,8 @@ def import_from_postman (folder, from_file, to_file):
 			
 			try:
 				if test["request"]["body"]["mode"] == "raw":
-					td_test["api_params"] = json.loads (test["request"]["body"]["raw"])
+					td_test["api_params"] = json.loads (
+						test["request"]["body"]["raw"].replace ('false', 'False').replace ('true', 'True'))
 			except:
 				td_test["api_params"] = {}
 			
@@ -72,5 +73,5 @@ def import_from_postman (folder, from_file, to_file):
 		import_result = True
 	except:
 		pass
-	
+
 	return import_result

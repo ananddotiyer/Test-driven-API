@@ -55,7 +55,7 @@ def main_config (run_from_web, username=""):
 			test_list = getattr (mod, tests_in_folder[-1]) #tests_in_folder[-1] is tests_user_defined
 			test_category = folder + "." + tests_in_folder[-1] #Misc.tests_user_defined
 		except:
-			pass
+			traceback.print_exc () #api_store may not be present
 
 		for test in test_list:
 			test["api_category"] = test_category 
