@@ -132,7 +132,7 @@ def results ():
             folder_parts = file_path.split ('\\')
             folder = tests_folder + '\\'.join (folder_parts[:-1]) #tests folder
             filename = folder_parts[-1] #only the filename
-            line["test_path"] = "download?folder=%s&filename=%s" %(folder, filename)
+            line["test_path"] = "download?folder=%s/&filename=%s" %(folder, filename)
             
             file_path = extract_filename_from_hyperlink (line["result"])
             folder_parts = file_path.split ('\\')
@@ -218,32 +218,12 @@ def run_ci ():
     
         main_driver (True, username=username)
     
-        tests_folder = global_dict["test_folder"]
+        tests_folder = global_dict["test_folder"].replace ('\\', '/')
         print tests_folder
-
-        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
-        line = "["
-        for row in reader:
-            print row
-            line += json.dumps (row)
-            line += ','
-        line = line.strip (',')
-        line += "]"
         
-        print "Before: " + line
-        line = line.replace ('\\"', '\\\'')
-        line = line.replace ('\\\\', '\\\\\\\\')
-        print "After: " + line
-        
-        reader = csv.DictReader(open(tests_folder + 'passfaillog.csv'))
-        with open(tests_folder + 'ci.json', 'w') as jsonfile:
-            jsonfile.write('[')
-            for row in reader:
-                json.dump(row, jsonfile)
-                jsonfile.write(',')
-            jsonfile.write(']')
-    
-        #return jsonify (line)
+        line = {"report":"http://localhost:5000/download?folder=%s&filename=passfaillog.csv" %(tests_folder)}
+       
+        line = json.dumps (line)
         return line
     except:
         return render_template ('no_ops.html')

@@ -117,14 +117,16 @@ def WriteRow (f, data_dict, current_api, global_dict):
 
 		if (output_mode == 'n'):
 			return
+		if type (data_dict) == list:
+			WriteHeader (f, data_dict[0].keys(), output_mode) #get header from the first row of data_dict
+			for row in data_dict:
+				WriteRowDetails (f, row)
+		else:
+			WriteHeader (f, data_dict.keys(), output_mode)
+			WriteRowDetails (f, data_dict)
 
-		WriteHeader (f, data_dict[0].keys(), output_mode)
-		
-		for row in data_dict:
-			WriteRowDetails (f, row)
-			
 	except Exception, e:
-		pass
+		traceback.print_exc ()
 		#report_it ("Row " + str (rowCount) + ":" + str(e) + " field is missing in the server response (JSON)\n")
 		#f.write ("\n")
 		
