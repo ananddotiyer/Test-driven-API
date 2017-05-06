@@ -306,6 +306,7 @@ def debuglog ():
         return render_template ('no_results.html', running=global_dict["running"])
 
 class CreateNewTest (FlaskForm):
+    category = StringField('Category: ', render_kw={'readonly': True})
     name = StringField('Name: ', validators=[Required(), Length(1, 30)])
     method = StringField('Type: ')
     url = StringField('URL: ', validators=[Required(), Length(1, 1000)], render_kw={"style":"width: 1000px;"})
@@ -435,6 +436,7 @@ def duplicate ():
         
         #Pre-populate data
         if request.method == 'GET':
+            form.category.data = "Misc.tests_user_defined" #disabled in the jinja template
             form.name.data = '"%s"' %(test["api_name"])
             form.method.data = '"%s"' %(test["api_type"])
             form.url.data = '"%s"' %(test["api_url"])
