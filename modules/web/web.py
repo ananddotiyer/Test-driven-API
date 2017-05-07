@@ -39,7 +39,7 @@ from tests.tests_suite import *
 def index():
     if 'username' in session and not escape(session['username']) == "":
         info = logged_in_user (session)
-        return render_template('user.html', info=info)
+        return render_template('user.html', info=info, username=escape(session['username']))
     else:
         return redirect(url_for('login'))    
 
@@ -105,7 +105,7 @@ def tests():
         global_dict["running"] = False #so that you can run it again!
         return redirect(url_for('results'))
     
-    return render_template('tests.html', tests=test_list)
+    return render_template('tests.html', tests=test_list, username=escape(session['username']))
 
 @app.route ("/results")
 def results ():
@@ -147,10 +147,10 @@ def results ():
             if not os.path.isfile(schema_file):
                 line["schema"] = "none"
             line["schema"] = "schema?schema=%s" %(filename)
-        return render_template ('results.html', results=results_list)
+        return render_template ('results.html', results=results_list, username=escape(session['username']))
     except:
         traceback.print_exc ()
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 @app.route ("/run")
 def run ():
@@ -200,10 +200,10 @@ def run ():
                 line["schema"] = "none"
             line["schema"] = "schema?schema=%s" %(filename)
              
-        return render_template ('run.html', results=results_list)
+        return render_template ('run.html', results=results_list, username=escape(session['username']))
     except:
         traceback.print_exc ()
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 @app.route ("/run_ci")
 def run_ci ():
@@ -226,7 +226,7 @@ def run_ci ():
         line = json.dumps (line)
         return line
     except:
-        return render_template ('no_ops.html')
+        return render_template ('no_ops.html', username=escape(session['username']))
 
 @app.route ("/schema")
 def schema ():
@@ -252,9 +252,9 @@ def schema ():
             lines.append(line.strip ())
         reader.close()
     
-        return render_template ('schema.html', indices=range (len (tabs)), tabs=tabs, schema=lines)
+        return render_template ('schema.html', indices=range (len (tabs)), tabs=tabs, schema=lines, username=escape(session['username']))
     except:
-        return render_template ('no_schema.html')
+        return render_template ('no_schema.html', username=escape(session['username']))
 
 @app.route ("/cleanup")
 def cleanup ():
@@ -280,9 +280,9 @@ def cleanup ():
     
         shutil.copy (global_dict["test_folder"] + "passfaillog_blank.csv", global_dict["test_folder"] + "passfaillog.csv")
     
-        return render_template ('cleanup.html')
+        return render_template ('cleanup.html', username=escape(session['username']))
     except:
-        return render_template ('no_ops.html')
+        return render_template ('no_ops.html', username=escape(session['username']))
 
 @app.route ("/debuglog")
 def debuglog ():
@@ -301,9 +301,9 @@ def debuglog ():
     reader.close()
 
     try:
-        return render_template ('debuglog.html', lines=lines)
+        return render_template ('debuglog.html', lines=lines, username=escape(session['username']))
     except:
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 class CreateNewTest (FlaskForm):
     category = StringField('Category: ', render_kw={'readonly': True})
@@ -374,13 +374,13 @@ def test_upload ():
                 else:
                     upload_result = ""
             
-            return redirect(url_for('test_uploaded', import_result=import_result, upload_result=upload_result))
+            return redirect(url_for('test_uploaded', import_result=import_result, upload_result=upload_result, username=escape(session['username'])))
 
-        return render_template ('test_upload.html', form=form)
+        return render_template ('test_upload.html', form=form, username=escape(session['username']))
     except:
         traceback.print_exc ()
         #return render_template ('no_test.html')
-        return redirect(url_for('test_uploaded', import_result=import_result, upload=upload_result))
+        return redirect(url_for('test_uploaded', import_result=import_result, upload=upload_result, username=escape(session['username'])))
 
 @app.route ("/test_created_upload", methods=('GET', 'POST'))
 def test_created_upload ():
@@ -403,12 +403,12 @@ def test_created_upload ():
             filename = secure_filename(f.filename)
             f.save(tests_folder + "\\" + filename)
 
-            return redirect(url_for('test_uploaded'))
+            return redirect(url_for('test_uploaded'), username=escape(session['username']))
 
-        return render_template ('test_upload.html', form=form)
+        return render_template ('test_upload.html', form=form, username=escape(session['username']))
     except:
         traceback.print_exc ()
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 @app.route ("/duplicate", methods=('GET', 'POST'))
 def duplicate ():
@@ -483,11 +483,11 @@ def duplicate ():
                 fp.write ("}\n")
                 fp.write ("]")
 
-            return redirect(url_for('test_created')) #creates test (tests_user_defined.py) in tests folder in server.
-        return render_template ('duplicate.html', form=form)
+            return redirect(url_for('test_created'), username=escape(session['username'])) #creates test (tests_user_defined.py) in tests folder in server.
+        return render_template ('duplicate.html', form=form, username=escape(session['username']))
     except:
         traceback.print_exc ()
-        return render_template ('no_results.html', running=global_dict["running"])
+        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 @app.route ("/delete", methods=('GET','POST'))
 def delete ():
@@ -531,10 +531,10 @@ def delete ():
                 fp.write ("},\n")
             fp.write ("]")
                 
-        return render_template ('test_deleted.html') #deletes test (tests_user_defined.py) from  tests folder in server.
+        return render_template ('test_deleted.html', username=escape(session['username'])) #deletes test (tests_user_defined.py) from  tests folder in server.
     except:
         traceback.print_exc ()
-        return render_template ('no_test.html')
+        return render_template ('no_test.html', username=escape(session['username']))
 
 @app.route ("/download")
 def download ():
@@ -550,7 +550,7 @@ def download ():
     if "tests_%s" %(escape(session['username'])) in folder: #allow only tests for the corresponding login to be downloaded
         return send_from_directory(folder, filename, as_attachment=True)
     else:
-        return render_template ('no_test.html')
+        return render_template ('no_test.html', username=escape(session['username']))
 
 @app.route ("/test_uploaded")
 def test_uploaded ():
@@ -560,7 +560,7 @@ def test_uploaded ():
 
     global_dict = main_config (True, escape(session['username']))
 
-    return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"))
+    return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"), username=escape(session['username']))
 
 @app.route ("/test_created")
 def test_created ():
@@ -570,11 +570,11 @@ def test_created ():
 
     global_dict = main_config (True, escape(session['username']))
 
-    return render_template ('test_created.html')
+    return render_template ('test_created.html', username=escape(session['username']))
 
 @app.errorhandler(404)
 def not_found(e):
-    return render_template('404.html')
+    return render_template('404.html', username=escape(session['username']))
 
 
 if __name__ == '__main__':
