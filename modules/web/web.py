@@ -27,10 +27,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top secret!'
 bootstrap = Bootstrap(app)
 
-if __name__ == '__main__' and __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    sys.path.append(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+#if __name__ == '__main__' and __package__ is None:
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+sys.path.append(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
 
 from main import main_config, main_driver
 from tests.tests_suite import *
@@ -574,12 +574,22 @@ def test_created ():
 
 @app.errorhandler(404)
 def not_found(e):
-    return render_template('404.html', username=escape(session['username']))
+    return render_template('404.html')
 
+#Following code has been commented, since it's preferrable to run the server using the flask-cli
+#Steps to use to run flask-cli:
+#Add the path to web.py to PYTHONPATH
+#In the cmd shell,  run the following commands.
+#cd D:\Moolya\GitHub\Test-driven-API\modules\web
+#set FLASK_APP=web.py
+#set FLASK_DEBUG=1
+#flask run --with-threads
 
-if __name__ == '__main__':
-    # set the secret key.  keep this really secret:
-    #app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-    while True:
-        print "Restarting..."
-        app.run(host='0.0.0.0', threaded=True, debug=True)
+# if __name__ == '__main__':
+#     # set the secret key.  keep this really secret:
+#     #app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+#     while True:
+#         print "Restarting..."
+#         app.run(host='0.0.0.0', threaded=True, debug=True)
+#     
+#     print "Exiting..."
