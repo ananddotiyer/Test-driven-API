@@ -374,13 +374,13 @@ def test_upload ():
                 else:
                     upload_result = ""
             
-            return redirect(url_for('test_uploaded', import_result=import_result, upload_result=upload_result, username=escape(session['username'])))
+            return redirect(url_for('test_uploaded', import_result=import_result, upload_result=upload_result))
 
         return render_template ('test_upload.html', form=form, username=escape(session['username']))
     except:
         traceback.print_exc ()
         #return render_template ('no_test.html')
-        return redirect(url_for('test_uploaded', import_result=import_result, upload=upload_result, username=escape(session['username'])))
+        return redirect(url_for('test_uploaded', import_result=import_result, upload=upload_result))
 
 @app.route ("/test_created_upload", methods=('GET', 'POST'))
 def test_created_upload ():
@@ -403,7 +403,7 @@ def test_created_upload ():
             filename = secure_filename(f.filename)
             f.save(tests_folder + "\\" + filename)
 
-            return redirect(url_for('test_uploaded'), username=escape(session['username']))
+            return redirect(url_for('test_uploaded'))
 
         return render_template ('test_upload.html', form=form, username=escape(session['username']))
     except:
@@ -483,11 +483,11 @@ def duplicate ():
                 fp.write ("}\n")
                 fp.write ("]")
 
-            return redirect(url_for('test_created'), username=escape(session['username'])) #creates test (tests_user_defined.py) in tests folder in server.
+            return redirect(url_for('test_created')) #creates test (tests_user_defined.py) in tests folder in server.
         return render_template ('duplicate.html', form=form, username=escape(session['username']))
     except:
         traceback.print_exc ()
-        return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
+        return render_template ('no_ops.html', username=escape(session['username']))
 
 @app.route ("/delete", methods=('GET','POST'))
 def delete ():
