@@ -513,8 +513,11 @@ def delete ():
     try:
         mod = import_module (global_dict["test_module"] + "Misc.tests_user_defined")
         tests = getattr (mod, "tests_user_defined")
+
+        #Before and after print is an odd fix to a server crash.  Possibly, this is creating a required delay.
+        print "Before: " + str (len (tests))
         tests.remove (test)
-        
+        print "After:" + str (len (tests))
         tests_folder = global_dict["test_folder"] + "Misc/"
         with open (tests_folder + "tests_user_defined.py", "w") as fp:
             fp.write ("tests_user_defined = [\n")
@@ -522,7 +525,6 @@ def delete ():
             for test in tests:
                 fp.write ("{\n")
                 for each in test:
-                    print test[each], type (test[each] )
                     if type (test[each] ) == str or type (test[each] ) == unicode:
                         fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
                     else:
@@ -542,7 +544,7 @@ def download ():
         info = logged_in_user (session)
         return render_template('user.html', info=info)
 
-    global_dict = main_config (True, escape(session['username']))
+    #global_dict = main_config (True, escape(session['username']))
 
     folder = request.args.get ('folder')
     filename = request.args.get ('filename')
@@ -558,7 +560,7 @@ def test_uploaded ():
         info = logged_in_user (session)
         return render_template('user.html', info=info)
 
-    global_dict = main_config (True, escape(session['username']))
+    #global_dict = main_config (True, escape(session['username']))
 
     return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"), username=escape(session['username']))
 
@@ -568,7 +570,7 @@ def test_created ():
         info = logged_in_user (session)
         return render_template('user.html', info=info)
 
-    global_dict = main_config (True, escape(session['username']))
+    #global_dict = main_config (True, escape(session['username']))
 
     return render_template ('test_created.html', username=escape(session['username']))
 
