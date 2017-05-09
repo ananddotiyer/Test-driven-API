@@ -16,7 +16,7 @@ from importlib import import_module
 from flask import Flask, session, escape, request, send_from_directory, render_template, redirect, url_for, jsonify
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FileField
+from wtforms import StringField, SubmitField, FileField, PasswordField, validators
 from wtforms.validators import Required, Length
 from werkzeug.utils import secure_filename
 from uuid import getnode as get_mac
@@ -47,7 +47,9 @@ def index():
 def login():
     form = LoginForm()
 
-    if request.method == 'POST':
+    #if request.method == 'POST':
+    if form.validate_on_submit():
+        #if form.password.data == form.username.data[::-1]:
         session['username'] = form.username.data
         return redirect(url_for('tests'))
 
@@ -327,11 +329,25 @@ class UploadTest (FlaskForm):
     submit = SubmitField('Upload')
 
 class LoginForm (FlaskForm):
-    username =  StringField('User name')
-    #password =  StringField('Password')
+    username =  StringField ('User name')
+    password =  PasswordField ('Password')
 
     submit = SubmitField('Login')
 
+    def validate_username (form, field):
+        tests_folder_name = "tests_%s" %(field.data)
+        tests_folder = "%s/%s" %(path.dirname(path.dirname(path.abspath(__file__))), tests_folder_name)
+        tests_modules_name = "%s." %(tests_folder_name)
+        try:
+            print tests_modules_name + "tests_suite"
+            import_module (tests_modules_name + "tests_suite")
+        except:
+            raise validators.ValidationError('User does not exist')
+
+    def validate_password(form, field):
+            if not form.username.data == field.data[::-1]:
+                raise validators.ValidationError('Password incorrect')
+    
 @app.route ("/test_upload", methods=('GET', 'POST'))
 def test_upload ():
     if not 'username' in session:
