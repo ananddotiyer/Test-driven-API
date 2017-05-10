@@ -244,7 +244,7 @@ def schema ():
     filename = request.args.get ('schema')
     try:
         if not filename:
-            reader = open(global_dict["schema_folder"] + "/schema.txt")
+            reader = open(global_dict["test_folder"] + "/schema.txt")
         else:
             reader = open(global_dict["schema_folder"] + "/" + filename)
         
