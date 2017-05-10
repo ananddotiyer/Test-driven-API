@@ -308,6 +308,11 @@ def debuglog ():
         return render_template ('no_results.html', running=global_dict["running"], username=escape(session['username']))
 
 class CreateNewTest (FlaskForm):
+    def __init__(self, api_category, api_name, *args, **kwargs):
+        super(CreateNewTest, self).__init__(*args, **kwargs)
+        self.api_category = api_category
+        self.api_name = api_name
+        
     category = StringField('Category: ', render_kw={'readonly': True})
     name = StringField('Name: ', validators=[Required(), Length(1, 30)])
     method = StringField('Type: ')
@@ -319,9 +324,38 @@ class CreateNewTest (FlaskForm):
     function = StringField('Function: ', validators=[Required()])
     output = StringField('Output mode: ', validators=[Required(), Length(1, 3)])
     #upload = FileField ()
+
+    def validate_name (form, field):
+        if field.data == '"%s"' %(form.api_name):
+            print 'api name already exists!'
+            raise validators.ValidationError('api name already exists')
     
     submit = SubmitField('Duplicate')
 
+class EditTest (FlaskForm):
+    def __init__(self, api_category, api_name, *args, **kwargs):
+        super(EditTest, self).__init__(*args, **kwargs)
+        self.api_category = api_category
+        self.api_name = api_name
+        
+    category = StringField('Category: ', render_kw={'readonly': True})
+    name = StringField('Name: ', validators=[Required(), Length(1, 30)])
+    method = StringField('Type: ')
+    url = StringField('URL: ', validators=[Required(), Length(1, 1000)], render_kw={"style":"width: 1000px;"})
+    parameters = StringField('Parameters: ', render_kw={"style":"width: 1000px;"})
+    expected = StringField('Expected: ', validators=[Required()], render_kw={"style":"width: 1000px;"})
+    repl = StringField('Replace string: ')
+    store = StringField('Store: ')
+    function = StringField('Function: ', validators=[Required()])
+    output = StringField('Output mode: ', validators=[Required(), Length(1, 3)])
+    #upload = FileField ()
+
+    def validate_name (form, field):
+        if not field.data == '"%s"' %(form.api_name):
+            raise validators.ValidationError('api name cannot be changed')
+    
+    submit = SubmitField('Edit')
+    
 class UploadTest (FlaskForm):
     import_from_postman = FileField ()
     upload_tests = FileField ()
@@ -448,7 +482,7 @@ def duplicate ():
         if cat == api_category and test["api_name"] == api_name:
             break
     try:
-        form = CreateNewTest()
+        form = CreateNewTest(api_category, api_name)
         
         #Pre-populate data
         if request.method == 'GET':
@@ -505,6 +539,85 @@ def duplicate ():
         traceback.print_exc ()
         return render_template ('no_ops.html', username=escape(session['username']))
 
+@app.route ("/edittest", methods=('GET', 'POST'))
+def edittest ():
+    lines = []
+
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    global_dict = main_config (True, escape(session['username']))
+    tests = global_dict["tests"]
+
+    api_category = request.args.get ('cat')
+    api_name = request.args.get ('name')
+    
+    for each_test in tests:
+        test = each_test[0]
+        cat = each_test[1]
+        subfolder = each_test[2]
+        
+        if cat == api_category and test["api_name"] == api_name:
+            break
+    try:
+        form = EditTest(api_category, api_name)
+        
+        #Pre-populate data
+        if request.method == 'GET':
+            form.category.data = "Misc.tests_user_defined" #disabled in the jinja template
+            form.name.data = '"%s"' %(test["api_name"])
+            form.method.data = '"%s"' %(test["api_type"])
+            form.url.data = '"%s"' %(test["api_url"])
+            form.parameters.data = test["api_params"]
+            form.expected.data = test["api_expected"]
+            form.repl.data = test["api_repl"]
+            form.store.data = test["api_store"]
+            form.function.data = '"%s"' %(test["api_function"])
+            form.output.data = '"%s"' %(test["output_mode"])
+        
+        edited_test = {}
+        if form.validate_on_submit():
+            edited_test["api_name"] = form.name.data
+            edited_test["api_type"] = form.method.data
+            edited_test["api_url"] = form.url.data
+            edited_test["api_params"] = form.parameters.data
+            edited_test["api_expected"] = form.expected.data
+            edited_test["api_repl"] = form.repl.data
+            edited_test["api_store"] = form.store.data
+            edited_test["api_function"] = form.function.data
+            edited_test["output_mode"] = form.output.data
+
+            mod = import_module (global_dict["test_module"] + "Misc.tests_user_defined")
+            tests = getattr (mod, "tests_user_defined")
+            tests.remove (test)
+            
+            tests_folder = global_dict["test_folder"] + "Misc/"
+            with open (tests_folder + "tests_user_defined.py", "w") as fp:
+                fp.write ("tests_user_defined = [\n")
+                #existing tests
+                for test in tests:
+                    fp.write ("{\n")
+                    for each in test:
+                        if not type (test[each] ) == dict or type (test[each] ) == list:
+                            fp.write ('\t"%s" : "%s",\n' %(each, test[each]))
+                        else:
+                            fp.write ('\t"%s" : %s,\n' %(each, test[each]))
+                            
+                    fp.write ("},\n")
+                #edited test
+                fp.write ("{\n")
+                for each in edited_test:
+                    fp.write ('\t"%s" : %s,\n' %(each, edited_test[each]))
+                fp.write ("}\n")
+                fp.write ("]")
+
+            return redirect(url_for('test_edited')) #creates test (tests_user_defined.py) in tests folder in server.
+        return render_template ('edittest.html', form=form, username=escape(session['username']))
+    except:
+        traceback.print_exc ()
+        return render_template ('no_ops.html', username=escape(session['username']))
+
 @app.route ("/delete", methods=('GET','POST'))
 def delete ():
     lines = []
@@ -549,7 +662,7 @@ def delete ():
                 fp.write ("},\n")
             fp.write ("]")
                 
-        return render_template ('test_deleted.html', username=escape(session['username'])) #deletes test (tests_user_defined.py) from  tests folder in server.
+            return redirect(url_for('test_deleted')) #deletes test (tests_user_defined.py) in tests folder in server.
     except:
         traceback.print_exc ()
         return render_template ('no_test.html', username=escape(session['username']))
@@ -559,8 +672,6 @@ def download ():
     if not 'username' in session:
         info = logged_in_user (session)
         return render_template('user.html', info=info)
-
-    #global_dict = main_config (True, escape(session['username']))
 
     folder = request.args.get ('folder')
     filename = request.args.get ('filename')
@@ -576,8 +687,6 @@ def test_uploaded ():
         info = logged_in_user (session)
         return render_template('user.html', info=info)
 
-    #global_dict = main_config (True, escape(session['username']))
-
     return render_template ('test_uploaded.html',import_result=request.args.get ("import_result"), upload_result=request.args.get ("upload_result"), username=escape(session['username']))
 
 @app.route ("/test_created")
@@ -586,9 +695,23 @@ def test_created ():
         info = logged_in_user (session)
         return render_template('user.html', info=info)
 
-    #global_dict = main_config (True, escape(session['username']))
-
     return render_template ('test_created.html', username=escape(session['username']))
+
+@app.route ("/test_edited")
+def test_edited ():
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    return render_template ('test_edited.html', username=escape(session['username']))
+
+@app.route ("/test_deleted")
+def test_deleted ():
+    if not 'username' in session:
+        info = logged_in_user (session)
+        return render_template('user.html', info=info)
+
+    return render_template ('test_deleted.html', username=escape(session['username']))
 
 @app.errorhandler(404)
 def not_found(e):
