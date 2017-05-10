@@ -13,8 +13,8 @@
         <td><a href='/edittest?cat={{api_category}}&name={{api_name}}' data-toggle="tooltip" title="edit test">{{ api_name }}</a></td>
         <td>{{ api_type }}</td>
         <td>{{ api_url }}</td>
-        <td><button type="button" class="btn btn-primary btn-sm btn-block" onclick="window.open('/duplicate?cat={{api_category}}&name={{api_name}}')">Copy</button></td>
-        <td><button type="button" class="btn btn-danger btn-sm btn-block" onclick="window.open('/delete?cat={{api_category}}&name={{api_name}}')">Delete</button></td>
+        <td><button type="button" class="btn btn-primary btn-sm btn-block" onclick="window.open('/duplicate?cat={{api_category}}&name={{api_name}}', '_self')">Copy</button></td>
+        <td><button type="button" class="btn btn-danger btn-sm btn-block" onclick="window.open('/delete?cat={{api_category}}&name={{api_name}}', '_self')">Delete</button></td>
     </tr>
 {% endmacro %}
 
