@@ -4,6 +4,12 @@
 {% block title %}Tests{{ server }}{% endblock %}
 
 {% block page_content %}
+    <script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();   
+    });
+    </script>
+
     <table class="table table-hover">
         <tr>
             <th>Select</th>
