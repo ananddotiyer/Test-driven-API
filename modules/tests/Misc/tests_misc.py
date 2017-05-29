@@ -58,13 +58,13 @@ tests_misc = [
     "api_params": {
       "key": "AIzaSyD7x0G_bXAwpd6eXg5NYJn91BLnpkXQ3oE",
       "cx": "002677408965362061794:0wbgub677qo",
-      "q": "Moolya Testing",
+      "q": "Anand Iyer",
     },
     "api_expected":{
       "row_json_path": "$.['items'][*]", #all items dicts
       "rowcount":30,
       "call_compare_equals": {
-        "$.['items'][0].['title']": ["Home - Moolya Software Testing"]
+        "$.['items'][0].['title']": ["Anand Iyer | LinkedIn"]
       },
       "call_compare_types": {
       },

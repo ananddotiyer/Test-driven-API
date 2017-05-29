@@ -721,7 +721,7 @@ def not_found(e):
 #Steps to use to run flask-cli:
 #Add the path to web.py to PYTHONPATH
 #In the cmd shell,  run the following commands.
-#cd D:\Moolya\GitHub\Test-driven-API\modules\web
+#cd <folder path>\modules\web
 #set FLASK_APP=web.py
 #set FLASK_DEBUG=1
 #flask run --with-threads
