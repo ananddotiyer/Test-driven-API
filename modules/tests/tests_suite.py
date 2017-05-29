@@ -27,11 +27,5 @@ global_dict = {
 run_list = ['POST', 'GET']
 
 tests_suite = [
-	#"Network18.tests_apphomekey",
-	#"Network18.tests_comment",
-	#"Network18.tests_pancake",
-	#"Wally.tests_token",
-	#"Wally.tests_categories",
-	#"Misc.tests_misc",
 	"Misc.tests_user_defined",
 ]
