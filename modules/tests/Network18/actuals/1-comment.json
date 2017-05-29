@@ -1,1 +1,0 @@
-{"totalPages": "int", "message": "str", "code": "int", "data": [{"comment": "str", "user_image": "str", "user_id": "str", "reportedBy": "any|null", "user_name": "str", "comment_id": "str", "timeMoment": "str", "time": "int", "isUserBlocked": "bool", "article_id": "str"}, "..."]}
