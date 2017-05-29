@@ -1,1 +1,16 @@
 # Test driven! API
+- Python-based framework to test web-services, directly at the end-point.
+- The main driver is independent of your tests.  Tests themselves are self-contained JSON structures.  No other script/code is associated with the tests.
+- Create a new test, either by duplicating an existing test (from the web interface) or uploading a local file created offline and containing JSON structured tests.
+- Well-organized test structure, layered by test suites, test categories, and test scripts.
+- The framework is data-driven, not only for test input parameters but also for the verification against custom oracles.
+- Extract data from specific portions of the response and use in subsequent requests.
+- Perform several out-of-the-box validations on JSON responses, like response code, response headers etc.
+- Inbuilt support for the JSON-path allows validating specific parts of the response, even at the most granular level.
+- Validate the content, type, and even the structure of the response.  Thus, if the response isn't expected to contain certain content in it, the tool can identify the precise location where it occurred.
+- Tweak your test (no additional code to be written), and you're on your way to building some of the most accurate validations.
+- Has a built-in parser for the templates, that can be customized to suit specific client needs.
+- Customized validation methods (other than content, type, and structure) coded in Python are supported*
+- Generate pass-fail reports (with links to exported data), and comprehensive debug logs.
+- Export JSON responses either in full or in part (using JSON-path) to readable CSV files, that can be used to in many different ways, including manually validating the response.
+- Execute tests using API, in CI mode.  CLI support.
