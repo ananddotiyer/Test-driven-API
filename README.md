@@ -1,5 +1,5 @@
-# Test driven! API
-- Test web-services, directly at the end-point.
+# Test driven! Framework
+- Test UI and non-UI.  Especially suited for web-services.
 - The main driver is independent of your tests.  Tests themselves are self-contained JSON structures.  No other script/code is associated with the tests.
 - Create a new test by copying an existing JSON.
 - Well-organized test structure, layered by test suites, test categories, and test scripts.
