@@ -1,5 +1,5 @@
 # Test driven! API
-- Python-based framework to test web-services, directly at the end-point.
+- Test web-services, directly at the end-point.
 - The main driver is independent of your tests.  Tests themselves are self-contained JSON structures.  No other script/code is associated with the tests.
 - Create a new test by copying an existing JSON.
 - Well-organized test structure, layered by test suites, test categories, and test scripts.
